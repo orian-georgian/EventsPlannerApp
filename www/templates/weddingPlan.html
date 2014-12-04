@@ -1,0 +1,111 @@
+<div class="modal form-modal">
+  <ion-header-bar>
+    <h1 class="title">Plan your wedding</h1>
+    <div class="buttons">
+      <button class="button button-clear" ng-click="closeWeddingPlan()">Close</button>
+    </div>
+  </ion-header-bar>
+  <ion-content>
+    <form name = "wishForm" novalidate>
+      <div class="modal-form">
+          <div class = "row">
+              <button href ng-click = "openHusbandForm();"><i class="icon ion-plus"></i> Add/Change husband info</button>
+          </div>
+          <div ng-show = "needToAddHusband">
+              <label class="item item-input" ng-class = "{'has-error' : wishForm.hname.$invalid}">
+                <input type="text" name = "hname" ng-model="weddingPlan.husband.name" placeholder = "Husband full name" required>
+                <span class = "text-danger" ng-show = "wishForm.hname.$error.required">Required!</span>
+              </label>
+
+              <label class="item item-input" ng-class = "{'has-error' : wishForm.hphone.$invalid}">
+                <input type="text" name = "hphone" ng-model="weddingPlan.husband.phoneNumber" placeholder = "Husband phone number" required>
+                <span class = "text-danger" ng-show = "wishForm.hphone.$error.required">Required!</span>
+              </label>
+
+              <label class="item item-input">
+                <input type="text" ng-model="weddingPlan.husband.email" placeholder = "Husband email address">
+              </label>
+              <button class="button button-positive button-small pull-right" ng-click = "addHusbandInfo();" ng-disabled = "!(weddingPlan.husband.name && weddingPlan.husband.phoneNumber)">Save</button>
+          </div>
+          <div class="row" ng-if = "weddingPlan.husband" ng-hide = "needToAddHusband">
+              <div class = "col">
+                  <i class="icon ion-person"></i>
+                  {{weddingPlan.husband.name}}
+              </div>
+              <div class = "col">
+                  <i class="icon ion-ios7-telephone"></i>
+                  {{weddingPlan.husband.phoneNumber}}
+              </div>
+              <div class = "col" ng-if = "weddingPlan.husband.email" >
+                  <i class="icon ion-email"></i>
+                  {{weddingPlan.husband.email}}
+              </div>
+          </div>
+          <div class = "row">
+              <button href = "" ng-click = "openWifeForm();"><i class="icon ion-plus"></i> Add/Change wife info</button>
+          </div>
+          <div ng-show = "needToAddWife">
+              <label class="item item-input" ng-class = "{'has-error' : wishForm.wname.$invalid}">
+                <input type="text" name = "wname" ng-model="weddingPlan.wife.name" placeholder = "Wife full name" required>
+                <span class = "text-danger" ng-show = "wishForm.wname.$error.required">Required!</span>
+              </label>
+
+              <label class="item item-input" ng-class = "{'has-error' : wishForm.wphone.$invalid}">
+                <input type="text" name = "wphone" ng-model="weddingPlan.wife.phoneNumber" placeholder = "Wife phone number" required>
+                <span class = "text-danger" ng-show = "wishForm.wphone.$error.required">Required!</span>
+              </label>
+
+              <label class="item item-input">
+                <input type="text" name = "wemail" ng-model="weddingPlan.wife.email" placeholder = "Wife email address">
+              </label>
+              <button class="button button-positive button-small pull-right" ng-click = "addWifeInfo();" ng-disabled = "!(weddingPlan.wife.name && weddingPlan.wife.phoneNumber)">Save</button>
+          </div>
+
+          <div class="row" ng-if = "weddingPlan.wife" ng-hide = "needToAddWife">
+              <div class = "col">
+                  <i class="icon ion-person"></i>
+                  {{weddingPlan.wife.name}}
+              </div>
+              <div class = "col">
+                  <i class="icon ion-ios7-telephone"></i>
+                  {{weddingPlan.wife.phoneNumber}}
+              </div>
+              <div class = "col" ng-if = "weddingPlan.wife.email" >
+                  <i class="icon ion-email"></i>
+                  {{weddingPlan.wife.email}}
+              </div>
+          </div>
+
+          <br/>
+          <label class="item item-input" ng-class = "{'has-error' : wishForm.dateW.$invalid || datesAreEqual()}">
+            <input type = "date" name = "dateW" ng-model="weddingPlan.date" required>
+            <span class = "text-danger" ng-show = "wishForm.dateW.$error.required">Required!</span>
+            <span class = "text-danger" ng-show = "datesAreEqual();">Date is obsolite!</span>
+          </label>
+
+          <label class="item item-input" ng-class = "{'has-error' : wishForm.location.$invalid}">
+            <input type="text" name = "location" ng-model="weddingPlan.place" placeholder = "Deserved location" required>
+            <span class = "text-danger" ng-show = "wishForm.location.$error.required">Required!</span>
+          </label>
+          <label class="item item-input" ng-class = "{'has-error' : wishForm.invited.$invalid}">
+            <input type="number" name = "invited" min="1" max="1000" ng-model="weddingPlan.invited" placeholder = "Estimative number of invited" required>
+            <span class = "text-danger" ng-show = "wishForm.invited.$error.required">Required!</span>
+            <span class = "text-danger" ng-show = "wishForm.invited.$error.number">Must be positive number between 1 and 1000!</span>
+          </label>
+          <label class="item item-input" >
+            <div class="list" style="width:100%;">
+              <div class="item range range-positive" >
+                <i class="icon ion-social-usd-outline"></i>
+                <input type="range" name="budget" min="0" max="50000" ng-model = "weddingPlan.budget"  required>
+                <i class="icon ion-social-usd"></i>           
+                <input class = "budget-input" type="text" name = "budget" ng-pattern = "/^[0-9]+$/" ng-model="weddingPlan.budget" placeholder = "Budget" required>
+                <span class = "text-danger" ng-show = "isPositiveNumber(weddingPlan.budget) || wishForm.budget.$error.pattern">Must be number between 1 and 50000!</span>
+              </div>
+            </div>
+          </label>
+          <button class="button button-positive button-block text-center" ng-click = "planYourWedding();" ng-disabled = "wishForm.$invalid || datesAreEqual() || isPositiveNumber()">Send your wish</button>
+      </div>
+    </form>
+  </ion-content>
+</div>
+

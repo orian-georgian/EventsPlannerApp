@@ -1,0 +1,48 @@
+<ion-view title="Invited persons" class = "invited" animation="slide-left-right">
+    <ion-nav-buttons side="left">
+        <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+    </ion-nav-buttons>
+    <ion-content class="has-header">
+        <div class="list card">
+            <a class="item item-icon-left assertive" href="" ng-click = "importPhoneContacts();">
+                <i class="icon ion-android-call"></i>
+                Import phone contacts
+            </a>
+
+            <div ng-hide = "!isEmpty(invitedContacts)" class="item item-body">
+                <span>There is no invited persons added or imported!</span>
+            </div>
+            <!-- <div class="item item-body item-icon">
+            {{phoneContacts}}
+            </div> -->
+            <div ng-show = "!isEmpty(invitedContacts)" class="item item-body item-icon" ng-repeat = "contact in invitedContacts | orderBy : 'fullName'">
+                <div class = "row">
+                    <div class = "col col-10 invited-icons">
+                        <a href = "" ng-click = "editContact(contact);"><i class="icon ion-compose"></i></a>
+                        <a href = "" ng-click = "removeContact(contact);"><i class="icon ion-ios7-trash"></i></a>
+                    </div>
+                    <div class = "col col-80">
+                        <strong>{{contact.fullName}}</strong> - <span>{{contact.phoneNumber}}</span><br/>
+                        <a ng-hide = "contact.wasInvited" href = "" ng-click = "confirmInvitation(contact);"><span>Not invited <i class="icon ion-checkmark-circled"></i></span></a>
+                        <a ng-show = "contact.wasInvited" href = "" ng-click = "denyInvitation(contact);"><span>Invited <i class="icon ion-close-circled"></i></span></a><br/>
+                        <a ng-hide = "contact.hasConfirmed" href = "" ng-click = "confirmConfirmation(contact);"><span>Hasn't confirmed <i class="icon ion-checkmark-circled"></i></span></a>
+                        <a ng-show = "contact.hasConfirmed" href = "" ng-click = "denyConfirmation(contact);"><span>Has confirmed <i class="icon ion-close-circled"></i></span></a>
+                    </div>
+                    <div class =  "col-col-20">
+                        <a class="button button-positive" ng-href="tel:{{contact.phoneNumber}}">
+                          <i class="icon ion-ios7-telephone"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ion-content>
+    <ion-footer-bar>
+        <div class="tabs tabs-icon-top">
+            <a class="tab-item" ng-click = "showInvited();">
+                <i class="icon ion-plus-round"></i>
+                Add invited
+            </a>
+        </div>
+    </ion-footer-bar>
+</ion-view>

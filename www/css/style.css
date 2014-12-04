@@ -1,1 +1,191 @@
 /* Empty. Add your own CSS if you like */
+
+.main-window {
+	background: #d5d8dd;
+	background: -moz-linear-gradient(top,  #d5d8dd 0%, #ffffff 50%, #d5d8dd 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d5d8dd), color-stop(50%,#ffffff), color-stop(100%,#d5d8dd));
+	background: -webkit-linear-gradient(top,  #d5d8dd 0%,#ffffff 50%,#d5d8dd 100%);
+	background: -o-linear-gradient(top,  #d5d8dd 0%,#ffffff 50%,#d5d8dd 100%);
+	background: -ms-linear-gradient(top,  #d5d8dd 0%,#ffffff 50%,#d5d8dd 100%);
+	background: linear-gradient(to bottom,  #d5d8dd 0%,#ffffff 50%,#d5d8dd 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d5d8dd', endColorstr='#d5d8dd',GradientType=0 );
+	
+}
+.homeEvents{
+	background-image: url('../img/homeBG.png');
+	background-position:center center;
+	background-repeat:no-repeat;
+	height: 100%;
+	background:repeat-norepeat	
+}
+.greenBG{
+	background-image: url('../img/greenTop.png'), url('../img/greenBottom.png');
+	background-position:top center, bottom center;
+	background-size:100% auto, 100% auto;
+	height: 100%;
+	background-repeat:no-repeat	
+}
+.title{
+	margin: 0 auto 10px auto;
+	display:block;
+}
+.main-window .event-box {
+	margin: 10px;
+}
+/*
+.main-window .event-img {
+	height: 55px;
+	margin: 5px;
+	width: 55px;
+	border-radius: 30px;
+	box-shadow: 5px 3px 3px #FFC4EA;
+}
+*/
+.main-window span {
+	font-family: sand;
+	font-weight: 700;
+	color: #7A7A7A;
+	text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #ff00de, 0 0 70px #ff00de, 0 0 80px #ff00de, 0 0 100px #ff00de, 0 0 150px #ff00de;
+}
+
+.form-modal {
+	background: url('../img/background.png') no-repeat;
+}
+
+.form-modal .modal-form {
+	margin: 20px;
+}
+
+.form-modal .modal-form .item-input{
+	border-radius: 10px;
+	border: 1px solid black;
+	margin: 20px 0;
+}
+
+.form-modal .text-black {
+	color: black;
+}
+
+	.form-modal .budget-input {
+		border: 1px solid black;
+		text-align: center;
+		font-weight: 700;
+		
+	}
+
+.menu-container {
+	font-weight: 600;
+	font-size: 19px;
+	background-color: red;
+	text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #ff00de, 0 0 70px #ff00de, 0 0 80px #ff00de, 0 0 100px #ff00de, 0 0 150px #ff00de;
+}
+
+.menu-container img {
+	width: 15%;
+	vertical-align: middle;
+	margin-right: 20px;
+}
+
+.menu-container .item-content {
+	border-top: 2px solid white;
+	background: url('../img/light-green.jpg') no-repeat;
+}
+
+.invited .invited-list h2 {
+	color: #FF00CC;
+	font-weight: 800;
+}
+
+	.invited .invited-list .item {
+		background: url('../img/light-green.jpg') 100% no-repeat;
+	}
+
+	.invited .invited-list .item-invited {
+		opacity: 0.8;
+		background: #D1D1D1 100%;
+	}
+
+	.invited .invited-icons i {
+		font-size: 25px;
+	}
+
+
+.has-error {
+	background-color: #FFCCCC;
+}
+
+.pull-right {
+	float: right;
+}
+
+	.pull-left {
+		float: left;
+	}
+.text-danger {
+	color: red;
+	margin-right: 15px;
+	font-size: 12px;
+	font-weight: 600;
+}
+.spacer{
+	height:20px;
+}
+.space{
+	margin-top:30px!important;
+	margin-bottom:30px!important;
+}
+.switch{
+	 margin: 0 auto 10px;
+	 display:block;
+	 vertical-align:middle;
+	 width:100px;
+}
+/* overwrite */
+.has-header {
+    margin-top: 0;
+}
+
+.has-header-main {
+	margin-top: 40%;
+}
+/* event icons */
+.EventsIcons{
+	background: transparent url('../img/icon-line.png') center 97px no-repeat;
+	height:500px;
+}
+.corporate{
+	display:block;
+	position:absolute;
+	left:50%;
+	margin-left:-10px;
+	width:135px;
+	height:125px;
+}
+.social{
+	display: block;
+    height: 115px;
+    left: 50%;
+    margin-left: -136px;
+    position: absolute;
+    top: 107px;
+    width: 144px;
+}
+.wedding{
+	display:block;
+	position:absolute;
+	left:50%;
+	margin-left:-7px;
+	width:144px;
+	height:115px;
+	top:200px;
+}
+.meetup{
+	display: block;
+    height: 120px;
+    left: 50%;
+    margin-left: -132px;
+    position: absolute;
+    top: 285px;
+    width: 141px;
+}
+

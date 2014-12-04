@@ -1,0 +1,30 @@
+<div class="modal form-modal">
+  <ion-header-bar>
+    <h1 class="title">Phone contacts import</h1>
+    <div class="buttons">
+      <button class="button button-clear" ng-click="closePhoneContacts();">Close</button>
+    </div>
+  </ion-header-bar>
+  <ion-content>
+    <ul class="list">
+        <li class="item item-input">
+          <i class="icon ion-search placeholder-icon"></i>
+          <input type="text" placeholder="Search" ng-model = "search.fullName">
+        </li>
+        <li class="item item-checkbox" ng-repeat = "contact in phoneContacts | filter:search | orderBy:'fullName'">
+          <label class="checkbox">
+           <input type="checkbox" ng-model = "contact.toSave">
+          </label>
+          <strong>{{contact.fullName}}</strong>
+          <span class = "pull-right">{{contact.phoneNumber}}</span>
+        </li>
+    </ul>
+  </ion-content>
+  <div class="tabs tabs-icon-top">
+      <a class="tab-item" ng-click = "saveContacts();">
+            <i class="icon ion-android-hand"></i>
+            Save chosen contacts
+        </a>
+    </div>
+</div>
+

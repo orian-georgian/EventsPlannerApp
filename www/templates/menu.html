@@ -1,0 +1,49 @@
+<ion-side-menus>
+  <ion-pane ion-side-menu-content>
+    <ion-nav-bar class="bar-stable nav-title-slide-ios7">
+    </ion-nav-bar>
+    <ion-nav-view name="menuContent" animation="slide-left-right"></ion-nav-view>
+  </ion-pane>
+
+  <ion-side-menu side="left">
+    <header class="bar bar-header bar-stable">
+      <h1 class="title">Wedding details</h1>
+    </header>
+    <ion-content class="has-header">
+      <ion-list class = "menu-container">
+        <ion-item nav-clear menu-close href="#/menu/wedding" class = "menu-item">
+          <img src="img/general.png">
+          General
+        </ion-item>
+        <ion-item nav-clear menu-close href="">
+          <img src="img/location.png">
+          Location
+        </ion-item>
+        <ion-item nav-clear menu-close href="">
+          <img src="img/vestimentation.png">
+          Vestimentation
+        </ion-item>
+        <ion-item nav-clear menu-close href="">
+          <img src="img/entertainment.png">
+          Entertainment
+        </ion-item>
+        <ion-item nav-clear menu-close href="">
+          <img src="img/decoration.png">
+          Decoration
+        </ion-item>
+        <ion-item nav-clear menu-close href="#/menu/invited">
+          <img src="img/invited.png">
+          Invited persons
+        </ion-item>
+        <ion-item nav-clear menu-close href = "" ng-hide = "authenticationModel.isLoggedIn" ng-click = "login();">
+          <img src="img/login.png">
+          Login
+        </ion-item>
+        <ion-item nav-clear menu-close href = "" ng-show = "authenticationModel.isLoggedIn" ng-click = "logout();">
+          <img src="img/login.png">
+          Logout
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ion-side-menu>
+</ion-side-menus>

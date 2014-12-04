@@ -1,0 +1,27 @@
+<ion-view title="Evenimente" class = "main-window">
+	<div class="homeEvents">
+		<div class="greenBG">
+    <div class="container">
+        <div class="spacer"></div>
+	<img class="title img-responsive" width="268" height="48" align="center" src="img/title.png" />
+    </div>
+	<div class="title img-responsive space switch">
+        <a ng-hide = "authenticationModel.isLoggedIn" class="tab-item" ng-click = "login();">
+            <img src="img/greenLogin.png" width="100" height="49" /><br/>Login
+        </a>
+        <a ng-show = "authenticationModel.isLoggedIn" class="tab-item" ng-click = "logout();">
+            <img src="img/greenLogout.png" width="100" height="49" /><br/>Logout
+        </a>
+    </div>
+    <ion-content class="has-header-main text-center">
+		<div class="EventsIcons">
+			<a class="corporate" href="#"><img class = "event-img" ng-src="img/icon-Corporate_Events.png" /></a>
+			<a class="social" href="#"><img class = "event-img" ng-src="img/icon-Social_Events.png" /></a>
+			<a class="wedding" ng-href = "#/menu/wedding"><img class = "event-img" ng-src="img/icon-Wedding.png" /></a>
+			<a class="meetup" href="#"><img class = "event-img" ng-src="img/icon-Meetup.png" /></a>
+		</div>
+    </ion-content>
+    
+		</div>
+	</div>
+</ion-view>

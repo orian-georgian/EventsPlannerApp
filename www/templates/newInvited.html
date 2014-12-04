@@ -1,0 +1,34 @@
+<div class="modal form-modal">
+  <ion-header-bar>
+    <h1 class="title">Save invited</h1>
+    <div class="buttons">
+      <button class="button button-clear" ng-click="closeInvited()">Close</button>
+    </div>
+  </ion-header-bar>
+  <ion-content>
+    <form name = "invitedForm">
+      <div class="modal-form">
+          <label class="item item-input" ng-class = "{'has-error':invitedForm.name.$invalid}">
+            <input type="text" name = "name" ng-model="invitedPerson.fullName" placeholder = "Full name" required>
+            <span class = "text-danger" ng-show = "invitedForm.name.$error.required">Required!</span>
+          </label>
+          <label class="item item-input" ng-class = "{'has-error':invitedForm.phone.$invalid}">
+            <input type="text" name = "phone" ng-model="invitedPerson.phoneNumber" placeholder = "Phone number" ng-maxlength = "13" ng-pattern = "/^[0-9\+.]*$/"  required>
+            <span class = "text-danger" ng-show = "invitedForm.phone.$error.required">Required!</span>
+            <span class = "text-danger" ng-show = "invitedForm.phone.$error.maxlength">Max nr. of digits is 13!</span>
+            <span class = "text-danger" ng-show = "invitedForm.phone.$error.pattern">Number</span>
+          </label>
+          <label class="item item-input" ng-class = "{'has-error':invitedForm.email.$invalid}">
+            <input type="email" name = "email" ng-model="invitedPerson.mailAddress" placeholder = "E-mail address">
+            <span class = "text-danger" ng-show = "invitedForm.email.$error.email">Wrong email!</span>
+          </label>
+          <label class="item item-input">
+            <input type="text" name = "address" ng-model="invitedPerson.homeAddress" placeholder = "Home address">
+          </label>
+          <button ng-show = "isHidden" class="button button-positive button-block text-center" type="button" ng-click = "addNewInvited(invitedPerson);" ng-disabled = "invitedForm.$invalid">Add</button>
+          <button ng-hide = "isHidden" class="button button-positive button-block text-center" type="button" ng-click = "saveContact(invitedPerson);">Save</button>
+      </div>
+    </form>
+  </ion-content>
+</div>
+
