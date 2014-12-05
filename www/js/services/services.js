@@ -14,11 +14,7 @@
         }
 
         function removeData(key) {
-            if (angular.isFunction($window.localStorage.removeItem)) {
-                $window.localStorage.removeItem(key);
-                return;
-            }
-            delete $window.localStorage[key];
+            $window.localStorage.removeItem(key);
         }
 
 		return {
@@ -34,25 +30,13 @@
 			requestToken = '',
 			accessToken = '';
 
-		$http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-
 		this.login = function() {
 			deff = $q.defer();
-			var ref = window.open('https://accounts.google.com/o/oauth2/auth?client_id=' + CONSTANTS.CLIENT_ID + '&redirect_uri=http://localhost/callback&scope=https://www.googleapis.com/auth/urlshortener&approval_prompt=force&response_type=code&access_type=offline', '_blank', 'location=no');
+			var ref = window.open('https://accounts.google.com/o/oauth2/auth?client_id=' + CONSTANTS.CLIENT_ID + '&redirect_uri=http://localhost/callback&scope=' + CONSTANTS.SCOPES +'&approval_prompt=force&response_type=code&access_type=offline', '_blank', 'location=no');
 	        ref.addEventListener('loadstart', function(event) { 
 	            if((event.url).startsWith("http://localhost/callback")) {
 	                requestToken = (event.url).split("code=")[1];
-	                $http({method: "post", url: "https://accounts.google.com/o/oauth2/token", data: "client_id=" + CONSTANTS.CLIENT_ID + "&client_secret=" + CONSTANTS.CLIENT_SECRET + "&redirect_uri=http://localhost/callback" + "&grant_type=authorization_code" + "&code=" + requestToken })
-	                    .success(function(data) {
-	                        accessToken = data.access_token;
-	                        AuthenticationModel.isLoggedIn = true;
-							AuthenticationModel.token = data.access_token;
-							$localStorage.Set('token', AuthenticationModel);
-					        deff.resolve(AuthenticationModel);
-	                    })
-	                    .error(function(data, status) {
-	                        alert("ERROR: " + data);
-	                    });
+	                getToken(requestToken);
 	                ref.close();
 	            }
 	        });
@@ -79,11 +63,97 @@
 				$state.go('event');
 				AuthenticationModel.isLoggedIn = false;
 				$localStorage.Zap('token');
-			}).error(function(){
-				deff.reject(data);
+			}).error(function(error){
+				deff.reject(error);
+				this.disconnect().then();
 			});
 			return deff.promise;
 		};
+
+		this.disconnect = function(){
+			deff = $q.defer();
+			$state.go('event');
+			AuthenticationModel.isLoggedIn = false;
+			$localStorage.Zap('token');
+			return deff.promise;
+		};
+
+		/*this.checkTokenValidation = function() {
+			var model = _.isUndefined($localStorage.Get('token')) ? null : $localStorage.Get('token');
+			deff = $q.defer();
+			$http({
+				method : 'POST',
+				url : 'https://www.googleapis.com/oauth2/v1/tokeninfo',
+				params : {
+					access_token : model.token
+				}
+			})
+    		.success(function(data){
+    			defer.resolve(data);
+    		})
+    		.error(function(error){
+    			defer.reject(error);
+    		});
+
+    		return defer.promise;
+		}*/
+
+		function getToken(requestToken){
+			$http({
+				method: "post",
+				url: "https://accounts.google.com/o/oauth2/token",
+				data: "client_id=" + CONSTANTS.CLIENT_ID + "&client_secret=" + CONSTANTS.CLIENT_SECRET + "&redirect_uri=http://localhost/callback" + "&grant_type=authorization_code" + "&code=" + requestToken
+			})
+            .success(function(data) {
+            	accessToken = data.access_token;
+            	getUserInfo(accessToken);
+                AuthenticationModel.isLoggedIn = true;
+				AuthenticationModel.token = data.access_token;
+				$localStorage.Set('token', AuthenticationModel);
+		        deff.resolve(AuthenticationModel);
+            })
+            .error(function(data, status) {
+                alert("ERROR: " + data);
+            });
+		}
+
+		function getUserInfo(accessToken) {
+			$http({
+				method : 'GET',
+				url : 'https://www.googleapis.com/oauth2/v1/userinfo',
+				params : {
+					alt : 'json',
+					access_token : accessToken
+				}
+			})
+    		.success(function(data){
+    			var user = {
+    				userId : data.id,
+    				userName : data.name,
+    				picture : data.picture
+    			}
+    			registerUser(user);
+    		})
+    		.error(function(error){
+
+    		});
+		}
+
+		function registerUser(user) {
+			$http({
+				method : 'POST',
+				url : '',
+				params : user
+			})
+    		.success(function(data){
+    			
+    		})
+    		.error(function(error){
+
+    		});
+		}
+
+		$http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 
 	});
 

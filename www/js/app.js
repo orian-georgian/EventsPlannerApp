@@ -5,6 +5,7 @@
     module.constant('CONSTANTS', {
       CLIENT_ID : '285780208615-tuarvu02t2ou4eonj0tel7905hch1st5.apps.googleusercontent.com',
       CLIENT_SECRET : '9pGiPun2lkNdbtL8Jp7opEqb',
+      SCOPES: 'https://www.googleapis.com/auth/userinfo.profile',
       API_KEY : 'AIzaSyDj-csmlxCNe9FcOzhJ_wsW-FziLd-cLhI'
     });
 
@@ -21,11 +22,11 @@
         }
       });
 
-      $rootScope.$on('loading:show', function() {
+      $rootScope.$on('loader_show', function() {
           $ionicLoading.show();
       });
 
-      $rootScope.$on('loading:hide', function() {
+      $rootScope.$on('loader_hide', function() {
           $ionicLoading.hide();
       });
     });
@@ -35,7 +36,7 @@
             responseError: function(rejection) {
                 if (rejection.status === 401 || rejection.status === 0) {
                     var authService = $injector.get('AuthenticationService');
-                    /*authService.logout().then();*/
+                    authService.disconnect().then();
                 }
                 return $q.reject(rejection);
             }
@@ -44,13 +45,17 @@
 
     module.service('loadingInterceptor',['$rootScope', function ($rootScope){
         return {
-            request: function(config) {
-                $rootScope.$broadcast('loading:show');
-                return config;
+            request: function (config) {
+                $rootScope.$broadcast('loader_show');
+                return config || $q.when(config);
             },
-            response: function(response) {
-                $rootScope.$broadcast('loading:hide');
-                return response;
+            response: function (response) {
+                $rootScope.$broadcast('loader_hide');
+                return response || $q.when(response);
+            },
+            responseError: function (response) {
+                $rootScope.$broadcast('loader_hide');
+                return $q.reject(response);
             }
         };
     }]);
