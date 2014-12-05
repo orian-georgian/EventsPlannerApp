@@ -45,13 +45,10 @@
 	                $http({method: "post", url: "https://accounts.google.com/o/oauth2/token", data: "client_id=" + CONSTANTS.CLIENT_ID + "&client_secret=" + CONSTANTS.CLIENT_SECRET + "&redirect_uri=http://localhost/callback" + "&grant_type=authorization_code" + "&code=" + requestToken })
 	                    .success(function(data) {
 	                        accessToken = data.access_token;
-	                        $state.go('menu.wedding');
 	                        AuthenticationModel.isLoggedIn = true;
 							AuthenticationModel.token = data.access_token;
 							$localStorage.Set('token', AuthenticationModel);
-							$rootScope.$apply(function() {
-					          	deff.resolve(AuthenticationModel);
-					        });
+					        deff.resolve(AuthenticationModel);
 	                    })
 	                    .error(function(data, status) {
 	                        alert("ERROR: " + data);

@@ -8,7 +8,7 @@
       API_KEY : 'AIzaSyDj-csmlxCNe9FcOzhJ_wsW-FziLd-cLhI'
     });
 
-    module.run(function($ionicPlatform) {
+    module.run(function ($ionicPlatform, $rootScope, $ionicLoading) {
       $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -19,6 +19,14 @@
           // org.apache.cordova.statusbar required
           StatusBar.styleDefault();
         }
+      });
+
+      $rootScope.$on('loading:show', function() {
+          $ionicLoading.show();
+      });
+
+      $rootScope.$on('loading:hide', function() {
+          $ionicLoading.hide();
       });
     });
 
@@ -32,6 +40,19 @@
                 return $q.reject(rejection);
             }
         }
+    }]);
+
+    module.service('loadingInterceptor',['$rootScope', function ($rootScope){
+        return {
+            request: function(config) {
+                $rootScope.$broadcast('loading:show');
+                return config;
+            },
+            response: function(response) {
+                $rootScope.$broadcast('loading:hide');
+                return response;
+            }
+        };
     }]);
 
     module.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', function ($httpProvider, $stateProvider, $urlRouterProvider) {
@@ -63,6 +84,7 @@
         });
         $urlRouterProvider.otherwise('/events');
         $httpProvider.interceptors.push('authHttpResponseInterceptor');
+        $httpProvider.interceptors.push('loadingInterceptor');
     }]);
 
 }).call(this, this.angular);

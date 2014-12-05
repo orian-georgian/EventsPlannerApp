@@ -238,8 +238,6 @@
           contact.hasConfirmed = false;
         };
 
-
-
         $scope.isEmpty = isEmpty;
 
     })
