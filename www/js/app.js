@@ -1,6 +1,6 @@
 (function(angular){
 
-    var module = angular.module('eventsPlanner', ['ionic', 'ngCordova', 'events.models', 'events.controllers', 'events.services'])
+    var module = angular.module('eventsPlanner', ['ionic', 'ngCordova', 'events.models', 'events.controllers', 'events.services', 'ui.bootstrap.pagination', 'template/pagination/pager.html', 'template/pagination/pagination.html'])
 
     module.constant('CONSTANTS', {
       CLIENT_ID : '285780208615-tuarvu02t2ou4eonj0tel7905hch1st5.apps.googleusercontent.com',
@@ -43,7 +43,7 @@
         }
     }]);
 
-    module.service('loadingInterceptor',['$rootScope', function ($rootScope){
+    module.service('loadingInterceptor',['$rootScope', '$q', function ($rootScope, $q){
         return {
             request: function (config) {
                 $rootScope.$broadcast('loader_show');
@@ -74,7 +74,7 @@
           views: {
             'menuContent' :{
               templateUrl: "templates/wedding.html",
-              controller: 'EventsCtrl'
+              controller: 'AppCtrl'
             }
           }
         })
@@ -86,10 +86,21 @@
               controller: 'InvitedCtrl'
             }
           }
+        })
+        .state('menu.locations', {
+          url: "/locations",
+          views: {
+            'menuContent' :{
+              templateUrl: "templates/locations.html",
+              controller: 'LocationsCtrl'
+            }
+          }
         });
+
         $urlRouterProvider.otherwise('/events');
         $httpProvider.interceptors.push('authHttpResponseInterceptor');
         $httpProvider.interceptors.push('loadingInterceptor');
+
     }]);
 
 }).call(this, this.angular);

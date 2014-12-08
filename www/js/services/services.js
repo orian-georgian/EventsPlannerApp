@@ -1,7 +1,8 @@
 (function(angular){	
 
 	var module = angular.module('events.services', []),
-		mapper = this.ContactsMapper;
+		mapper = this.ContactsMapper,
+		locationMapper = this.LocationMapper;
 
 	module.factory('$localStorage', ['$window', function ($window) {
 
@@ -225,6 +226,61 @@
 				result.reject(error);
 			});
 			return result.promise;
+		};
+
+	});
+
+
+	module.service('LocationsService', function ($http, $q) {
+
+		var lmapper = new locationMapper();
+
+		this.getLocations = function(postType, pageNumber) {
+			var deferred = $q.defer();
+
+			$http({
+				url : 'http://adclk.com/eventplanner/',
+				method : 'GET',
+				headers: {
+					'Content-type': 'application/jsonp'
+				},
+				params : {
+					json : 'get_posts',
+					post_type : postType,
+					page : pageNumber
+				}
+			})
+			.success(function(data){
+				deferred.resolve(lmapper.mapLocations(data));
+			}).error(function(error){
+				deferred.reject(error);
+			});
+
+			return deferred.promise;
+		};
+
+		this.getLocationByCategory = function(locationCategory, category, pageNumber) {
+			var deferred = $q.defer();
+
+			$http({
+				url : 'http://adclk.com/eventplanner/api/taxonomy/get_taxonomy_posts/',
+				method : 'GET',
+				headers: {
+					'Content-type': 'application/jsonp'
+				},
+				params : {
+					taxonomy : locationCategory,
+					slug : category,
+					page : pageNumber
+				}
+			})
+			.success(function(data){
+				deferred.resolve(data);
+			}).error(function(error){
+				deferred.reject(error);
+			});
+
+			return deferred.promise;
 		};
 
 	});

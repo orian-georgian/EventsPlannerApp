@@ -7,7 +7,6 @@
     .controller('AppCtrl', function($scope, $ionicModal, $ionicPopup, $timeout, $localStorage, AuthenticationService, AuthenticationModel, WeddingService) {
 
       var authModel = $localStorage.Get('token');
-      $scope.minDate = new moment().format('YYYY-MM-DD');
       $scope.weddingPlan = {
         budget: 40000
       };
@@ -16,13 +15,6 @@
           return $scope.minDate > $scope.weddingPlan.date;
       };
 
-      $scope.isPositiveNumber = function(number) {
-        return number < 0 || number > 50000;
-      };
-
-      $scope.needToAddHusband = false;
-      $scope.needToAddWife = false;
-          
       if (authModel) {
         AuthenticationModel = authModel;
         $scope.authenticationModel = authModel;
@@ -69,26 +61,6 @@
           WeddingService.makeAWish($scope.weddingPlan).then(function(){
             $scope.closeWeddingPlan();
           });
-      };
-
-      $scope.openHusbandForm = function() {
-        $scope.needToAddHusband = !$scope.needToAddHusband;
-      };
-
-      $scope.openWifeForm = function() {
-        $scope.needToAddWife = !$scope.needToAddWife;
-      };
-
-      $scope.addHusbandInfo = function() {
-        $scope.needToAddHusband = false;
-      };
-
-      $scope.addWifeInfo = function() {
-        $scope.needToAddWife = false;
-      };
-
-      $scope.disableLink = function(){
-        return $scope.needToAddWife;
       };
 
 
@@ -242,7 +214,25 @@
 
     })
 
-    .controller('EventsCtrl', function($scope, $timeout, $http) {
+    .controller('LocationsCtrl', function ($scope, $timeout, LocationsService) {
+        $scope.currentPage = 0;
+        /*function initialize(currentPage) {*/
+            LocationsService.getLocations('location', 1).then(function(data){
+              console.log(data);
+              $scope.locations = data.locations;
+              $scope.totalItems = data.total_count;
+            });
+        /*}*/
+
+        /*$scope.$watch('currentPage', function(){
+            LocationsService.getLocations('location', $scope.currentPage).then(function(data){
+              console.log(data);
+              $scope.locations = data.locations;
+              $scope.totalItems = data.total_count;
+            });
+        });*/
+
+       /* initialize(1);*/
 
     });
 

@@ -8,6 +8,8 @@
     "lodash": "~2.4.1",
     "jquery": "~2.1.1",
     "moment": "~2.8.4",
-    "ngCordova": "~0.1.7-alpha"
+    "ngCordova": "~0.1.7-alpha",
+    "angular-bootstrap": "~0.12.0",
+    "bootstrap": "~3.3.1"
   }
 }
