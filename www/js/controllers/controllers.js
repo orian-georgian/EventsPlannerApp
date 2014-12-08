@@ -215,24 +215,22 @@
     })
 
     .controller('LocationsCtrl', function ($scope, $timeout, LocationsService) {
-        $scope.currentPage = 0;
-        /*function initialize(currentPage) {*/
-            LocationsService.getLocations('location', 1).then(function(data){
+        $scope.page = { currentPage : 1 };
+        function initialize(currentPage) {
+            LocationsService.getLocations('location', currentPage).then(function(data){
               console.log(data);
               $scope.locations = data.locations;
-              $scope.totalItems = data.total_count;
+              $scope.totalItems = data.count_total;
+              $scope.numPerPage = 10;
+              $scope.nrOfPages = data.pages;
             });
-        /*}*/
+        }
 
-        /*$scope.$watch('currentPage', function(){
-            LocationsService.getLocations('location', $scope.currentPage).then(function(data){
-              console.log(data);
-              $scope.locations = data.locations;
-              $scope.totalItems = data.total_count;
-            });
-        });*/
+        $scope.$watch('page.currentPage', function(){
+            initialize($scope.page.currentPage);
+        });
 
-       /* initialize(1);*/
+        
 
     });
 

@@ -10,7 +10,7 @@
                 <h4>{{ location.city[0] }}</h4>
             </a>
         </div>
-        <pagination boundary-links="true" max-size = "5"  total-items="totalItems" ng-model="currentPage" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
+        <pagination boundary-links="true" num-pages = "nrOfPages" max-size = "5"  total-items="totalItems" ng-model="page.currentPage" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
     </ion-content>
     <div class="tabs tabs-icon-top">
     	<a class="tab-item" ng-href = "#/events">

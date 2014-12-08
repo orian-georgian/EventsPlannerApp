@@ -251,7 +251,7 @@
 				}
 			})
 			.success(function(data){
-				deferred.resolve(lmapper.mapLocations(data));
+				deferred.resolve(data);
 			}).error(function(error){
 				deferred.reject(error);
 			});
