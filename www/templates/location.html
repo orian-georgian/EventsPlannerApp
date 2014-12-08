@@ -1,0 +1,55 @@
+<ion-view title="{{locationItem.name[0]}}" class = "main-window" animation="slide-left-right">
+    <ion-nav-buttons side="left">
+	    <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+	</ion-nav-buttons>
+
+    <ion-content class="has-header has-footer">
+        <div class="list card">
+            <div class="item item-avatar item-icon-right">
+                <img src="img/location.png">
+                <h2>{{locationItem.city[0]}}</h2>
+                <p>{{locationItem.address[0]}}</p>
+                <p>{{locationItem.phone[0]}}</p>
+                <i ng-show = "locationItem.address" class="icon ion-earth"></i>
+            </div><br/>
+
+            <div class="item item-body">
+                <img class="full-image" fallback-src= "img/no-image.png" src="{{locationItem.picture[0]}}">
+                {{locationItem.content | htmlToPlaintext}}
+                <!-- <p>
+                <a href="#" class="subdued">1 Like</a>
+                <a href="#" class="subdued">5 Comments</a>
+                </p> -->
+            </div>
+
+            <!-- <div class="item tabs tabs-secondary tabs-icon-left">
+                <a class="tab-item" href="#">
+                <i class="icon ion-thumbsup"></i>
+                Like
+                </a>
+                <a class="tab-item" href="#">
+                <i class="icon ion-chatbox"></i>
+                Comment
+                </a>
+                <a class="tab-item" href="#">
+                <i class="icon ion-share"></i>
+                Share
+                </a>
+            </div> -->
+        </div>
+    </ion-content>
+    <div class="tabs tabs-icon-top">
+    	<a class="tab-item" ng-href = "" ng-click = "goBack();">
+            <i class="icon ion-arrow-return-left"></i>
+            Back
+        </a>
+        <a class="tab-item" ng-href = "" ng-click = "addToChecklist(locationItem);">
+            <i class="icon ion-plus-circled"></i>
+            Add to checklist
+        </a>
+        <a ng-show = "locationItem.phone" class="tab-item" ng-href = "tel:{{locationItem.phone}}">
+            <i class="icon ion-android-call"></i>
+            Call
+        </a>
+    </div>
+</ion-view>

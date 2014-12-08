@@ -214,17 +214,21 @@
 
     })
 
-    .controller('LocationsCtrl', function ($scope, $timeout, LocationsService) {
+    .controller('LocationsCtrl', function ($scope, $rootScope, $ionicScrollDelegate, LocationsService) {
         $scope.page = { currentPage : 1 };
         function initialize(currentPage) {
             LocationsService.getLocations('location', currentPage).then(function(data){
-              console.log(data);
               $scope.locations = data.locations;
               $scope.totalItems = data.count_total;
               $scope.numPerPage = 10;
               $scope.nrOfPages = data.pages;
+              $ionicScrollDelegate.scrollTop(true);
             });
         }
+
+        $scope.getCurrentLocation = function(location) {
+          $rootScope.locationItem = location;
+        };
 
         $scope.$watch('page.currentPage', function(){
             initialize($scope.page.currentPage);
@@ -232,6 +236,12 @@
 
         
 
+    })
+
+    .controller('LocationCtrl', function ($scope, $rootScope) {
+        $rootScope.$on('locationItem', function(e, location){
+          console.log(location);
+        });
     });
 
 }).call(this, this.angular);

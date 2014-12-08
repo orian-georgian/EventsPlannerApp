@@ -143,6 +143,10 @@
 /* overwrite */
 .has-header {
     margin-top: 0;
+} 
+
+.has-footer {
+	margin-bottom: 20px;
 }
 
 .has-header-main {

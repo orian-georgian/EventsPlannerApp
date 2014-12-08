@@ -4,13 +4,16 @@
 	</ion-nav-buttons>
     <ion-content class="has-header">
         <div class="list">
-            <a ng-repeat="location in locations" href="#/{{location.id}}" class="item item-thumbnail-left">
-                <img ng-src="{{ location.picture[0] }}">
-                <h2>{{ location.name[0] }}</h2>
-                <h4>{{ location.city[0] }}</h4>
+            <a ng-repeat="location in locations | orderBy:'name[0]'" href="#/menu/locations/{{location.id}}" class="item item-thumbnail-left" ng-click = "getCurrentLocation(location);">
+                <img fallback-src= "img/no-image.png" src="{{location.picture[0]}}">
+                <h2>{{location.name[0]}}</h2>
+                <h4>{{location.city[0]}}</h4>
             </a>
+            <div class = "item text-center" ng-show = "locations">
+                <pagination boundary-links="true" num-pages = "nrOfPages" max-size = "5"  total-items="totalItems" ng-model="page.currentPage" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
+            </div>
         </div>
-        <pagination boundary-links="true" num-pages = "nrOfPages" max-size = "5"  total-items="totalItems" ng-model="page.currentPage" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
+        
     </ion-content>
     <div class="tabs tabs-icon-top">
     	<a class="tab-item" ng-href = "#/events">

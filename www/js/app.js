@@ -1,6 +1,6 @@
 (function(angular){
 
-    var module = angular.module('eventsPlanner', ['ionic', 'ngCordova', 'events.models', 'events.controllers', 'events.services', 'ui.bootstrap.pagination', 'template/pagination/pager.html', 'template/pagination/pagination.html'])
+    var module = angular.module('eventsPlanner', ['ionic', 'ngCordova', 'events.directives', 'events.models', 'events.controllers', 'events.services', 'ui.bootstrap.pagination', 'template/pagination/pager.html', 'template/pagination/pagination.html'])
 
     module.constant('CONSTANTS', {
       CLIENT_ID : '285780208615-tuarvu02t2ou4eonj0tel7905hch1st5.apps.googleusercontent.com',
@@ -9,7 +9,7 @@
       API_KEY : 'AIzaSyDj-csmlxCNe9FcOzhJ_wsW-FziLd-cLhI'
     });
 
-    module.run(function ($ionicPlatform, $rootScope, $ionicLoading) {
+    module.run(function ($ionicPlatform, $rootScope, $ionicLoading, $ionicNavBarDelegate) {
       $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -29,6 +29,10 @@
       $rootScope.$on('loader_hide', function() {
           $ionicLoading.hide();
       });
+
+      $rootScope.goBack = function() {
+        $ionicNavBarDelegate.back();
+      };
     });
 
     module.service('authHttpResponseInterceptor',['$q', '$injector', function ($q, $injector){
@@ -93,6 +97,15 @@
             'menuContent' :{
               templateUrl: "templates/locations.html",
               controller: 'LocationsCtrl'
+            }
+          }
+        })
+        .state('menu.location', {
+          url: "/locations/:id",
+          views: {
+            'menuContent' :{
+              templateUrl: "templates/location.html",
+              controller: 'LocationCtrl'
             }
           }
         });
