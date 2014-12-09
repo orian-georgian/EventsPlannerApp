@@ -235,30 +235,6 @@
 
 		var lmapper = new locationMapper();
 
-		this.getLocations = function(postType, pageNumber) {
-			var deferred = $q.defer();
-
-			$http({
-				url : 'http://adclk.com/eventplanner/',
-				method : 'GET',
-				headers: {
-					'Content-type': 'application/jsonp'
-				},
-				params : {
-					json : 'get_posts',
-					post_type : postType,
-					page : pageNumber
-				}
-			})
-			.success(function(data){
-				deferred.resolve(lmapper.mapLocations(data));
-			}).error(function(error){
-				deferred.reject(error);
-			});
-
-			return deferred.promise;
-		};
-
 		this.getLocationByCategory = function(locationCategory, category, pageNumber) {
 			var deferred = $q.defer();
 
@@ -275,7 +251,7 @@
 				}
 			})
 			.success(function(data){
-				deferred.resolve(data);
+				deferred.resolve(lmapper.mapLocations(data));
 			}).error(function(error){
 				deferred.reject(error);
 			});

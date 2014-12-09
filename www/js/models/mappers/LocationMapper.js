@@ -13,7 +13,6 @@
 				locationObject = new LocationObject();
 
 			locationObject.count = dto.count;
-			locationObject.count_total = dto.count_total;
 			locationObject.pages = dto.pages;
 
 			_.each(dto.posts, function(data){
@@ -37,7 +36,6 @@
 			locationObject.locations = locationsArray;
 
 			return locationObject;
-			console.log(locationObject);
 		}
 
 		function mapCurrentLocation(data) {

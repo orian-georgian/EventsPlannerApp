@@ -4,12 +4,13 @@
 
     angular.module('events.controllers', [])
 
-    .controller('AppCtrl', function($scope, $ionicModal, $ionicPopup, $timeout, $localStorage, AuthenticationService, AuthenticationModel, WeddingService) {
+    .controller('AppCtrl', function ($scope, $ionicModal, $ionicPopup, $timeout, $localStorage, AuthenticationService, AuthenticationModel, WeddingService, CONSTANTS) {
 
       var authModel = $localStorage.Get('token');
       $scope.weddingPlan = {
         budget: 40000
       };
+      $scope.postType = CONSTANTS.POST_TYPES;
 
       $scope.datesAreEqual = function() {
           return $scope.minDate > $scope.weddingPlan.date;
@@ -214,21 +215,60 @@
 
     })
 
-    .controller('LocationsCtrl', function ($scope, $ionicScrollDelegate, LocationsService) {
+    .controller('LocationsCtrl', function ($scope, $stateParams, $ionicScrollDelegate, LocationsService) {
 
+        var post_type = $stateParams.type;
         $scope.page = { currentPage : 1 };
         $scope.numPerPage = 10;
-        $scope.locationCategories = [
-            { label : 'Churches', post_type : 'churches'},
-            { label : 'Restaurants', post_type : 'restaurants'},
-            { label : 'Tents', post_type : 'tents'}
-        ];
+
+        function getLocationCategories() {
+          switch (post_type) {
+            case 'location_category':
+              $scope.locationCategories = [
+                  { label : 'Churches', post_type : 'churches'},
+                  { label : 'Restaurants', post_type : 'restaurants'},
+                  { label : 'Tents', post_type : 'tents'}
+              ];
+              break;
+
+            case 'entertainment_category':
+              $scope.locationCategories = [
+                  { label : 'Governor', post_type : 'governor'},
+                  { label : 'Music', post_type : 'music'},
+                  { label : 'Photo', post_type : 'photo'},
+                  { label : 'Video', post_type : 'video'}
+              ];
+              break;
+
+            case 'vestimentation_category':
+              $scope.locationCategories = [
+                  { label : 'Accessories', post_type : 'accessories'},
+                  { label : 'Costumes', post_type : 'costume'},
+                  { label : 'Dresses', post_type : 'dress'},
+                  { label : 'Jewellery', post_type : 'jewellery'},
+                  { label : 'Shoes', post_type : 'shoes'}
+              ];
+              break;
+
+            case 'decoration_category':
+              $scope.locationCategories = [
+                  { label : 'Art decorations', post_type : 'art_deco'},
+                  { label : 'Flowershop', post_type : 'flowershop'},
+                  { label : 'Invitations', post_type : 'invitations'},
+                  { label : 'Others', post_type : 'others'}
+              ];
+              break;
+            case 'beauty_salon_category':
+              $scope.locationCategories = null;
+              break;
+          }
+        }
 
 
         function initialize(currentPage) {
-            LocationsService.getLocations('location', currentPage).then(function(data){
+            LocationsService.getLocationByCategory(post_type, null, $scope.page.currentPage).then(function(data){
               $scope.locations = data.locations;
-              $scope.totalItems = data.count_total;
+              $scope.totalItems = data.count;
               $scope.nrOfPages = data.pages;
               $ionicScrollDelegate.scrollTop(true);
             });
@@ -236,12 +276,12 @@
 
 
         $scope.getLocationsByCategory = function(category) {
-          
+
           $scope.page = { currentPage : 1 };
           if (category !== null) {
-            LocationsService.getLocationByCategory('location_category', category.post_type, $scope.page.currentPage).then(function(data){
+            LocationsService.getLocationByCategory(post_type, category.post_type, $scope.page.currentPage).then(function(data){
               $scope.locations = data.locations;
-              $scope.totalItems = data.count_total;
+              $scope.totalItems = data.count;
               $scope.nrOfPages = data.pages;
               $ionicScrollDelegate.scrollTop(true);
             });
@@ -253,6 +293,8 @@
         $scope.$watch('page.currentPage', function(){
             initialize($scope.page.currentPage);
         });
+
+        getLocationCategories();
 
     })
 

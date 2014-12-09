@@ -4,7 +4,6 @@
 
 	function LocationObject() {
 		this.count = 0;
-		this.count_total = 0;
 		this.pages = 0;
 		this.locations = null;
 	}

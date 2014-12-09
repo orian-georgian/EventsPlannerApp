@@ -4,7 +4,7 @@
 	</ion-nav-buttons>
     <ion-content class="has-header has-footer">
         <div class="list">
-            <label class="item item-input item-select">
+            <label class="item item-input item-select" ng-show = "locationCategories">
                 <div class="input-label">Locations category</div>
                 <select ng-options = "category.label for category in locationCategories" ng-model = "categoryModel" ng-change = "getLocationsByCategory(categoryModel);">
                     <option value="">All locations</option>
@@ -12,7 +12,6 @@
             </label>
             <a ng-repeat="location in locations | orderBy:'name[0]'" href="#/menu/locations/{{location.type}}/{{location.id}}" class="item item-thumbnail-left" ng-click = "getCurrentLocation(location);">
                 <img fallback-src= "img/no-image.png" src="{{location.picture[0]}}">
-                {{location.post_type}}
                 <h2>{{location.name[0]}}</h2>
                 <h4>{{location.city[0]}}</h4>
             </a>
