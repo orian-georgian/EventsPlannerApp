@@ -37,9 +37,29 @@
 			locationObject.locations = locationsArray;
 
 			return locationObject;
+			console.log(locationObject);
+		}
+
+		function mapCurrentLocation(data) {
+			var location = new EventLocation();
+			location.id = _.isUndefined(data.id) ? null : data.id;
+			location.type = _.isUndefined(data.type) ? null : data.type;
+			location.content = _.isUndefined(data.content) ? null : data.content;
+			location.name = _.isUndefined(data.custom_fields.name) ? null : data.custom_fields.name;
+			location.address = _.isUndefined(data.custom_fields.address) ? null : data.custom_fields.address;
+			location.city = _.isUndefined(data.custom_fields.city) ? null : data.custom_fields.city;
+			location.category = _.isUndefined(data.custom_fields.category) ? null : data.custom_fields.category;
+			location.capacity = _.isUndefined(data.custom_fields.capacity) ? null : data.custom_fields.capacity;
+			location.link = _.isUndefined(data.custom_fields.link) ? null : data.custom_fields.link;
+			location.phone = _.isUndefined(data.custom_fields.phone) ? null : data.custom_fields.phone;
+			location.picture = _.isUndefined(data.custom_fields.picture) ? null : data.custom_fields.picture;
+			location.dates = _.isUndefined(data.custom_fields.dates) ? null : data.custom_fields.dates;
+
+			return location;
 		}
 
 		this.mapLocations = mapLocations;
+		this.mapCurrentLocation = mapCurrentLocation;
 
 	}
 

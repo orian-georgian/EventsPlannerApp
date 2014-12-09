@@ -283,6 +283,30 @@
 			return deferred.promise;
 		};
 
+		this.getCurrentLocation = function(type, id) {
+			var deferred = $q.defer();
+
+			$http({
+				url : 'http://adclk.com/eventplanner/api/post/',
+				method : 'GET',
+				headers: {
+					'Content-type': 'application/jsonp'
+				},
+				params : {
+					json : 'get_post',
+					id : id,
+					post_type : type
+				}
+			})
+			.success(function(data){
+				deferred.resolve(lmapper.mapCurrentLocation(data.post));
+			}).error(function(error){
+				deferred.reject(error);
+			});
+
+			return deferred.promise;
+		};
+
 	});
 
 }).call(this, this.angular);

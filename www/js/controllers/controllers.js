@@ -214,34 +214,58 @@
 
     })
 
-    .controller('LocationsCtrl', function ($scope, $rootScope, $ionicScrollDelegate, LocationsService) {
+    .controller('LocationsCtrl', function ($scope, $ionicScrollDelegate, LocationsService) {
+
         $scope.page = { currentPage : 1 };
+        $scope.numPerPage = 10;
+        $scope.locationCategories = [
+            { label : 'Churches', post_type : 'churches'},
+            { label : 'Restaurants', post_type : 'restaurants'},
+            { label : 'Tents', post_type : 'tents'}
+        ];
+
+
         function initialize(currentPage) {
             LocationsService.getLocations('location', currentPage).then(function(data){
               $scope.locations = data.locations;
               $scope.totalItems = data.count_total;
-              $scope.numPerPage = 10;
               $scope.nrOfPages = data.pages;
               $ionicScrollDelegate.scrollTop(true);
             });
-        }
+        };
 
-        $scope.getCurrentLocation = function(location) {
-          $rootScope.locationItem = location;
+
+        $scope.getLocationsByCategory = function(category) {
+          
+          $scope.page = { currentPage : 1 };
+          if (category !== null) {
+            LocationsService.getLocationByCategory('location_category', category.post_type, $scope.page.currentPage).then(function(data){
+              $scope.locations = data.locations;
+              $scope.totalItems = data.count_total;
+              $scope.nrOfPages = data.pages;
+              $ionicScrollDelegate.scrollTop(true);
+            });
+          } else {
+              initialize($scope.page.currentPage);
+          }
         };
 
         $scope.$watch('page.currentPage', function(){
             initialize($scope.page.currentPage);
         });
 
-        
-
     })
 
-    .controller('LocationCtrl', function ($scope, $rootScope) {
-        $rootScope.$on('locationItem', function(e, location){
-          console.log(location);
-        });
+    .controller('LocationCtrl', function ($scope, $stateParams, LocationsService) {
+        var type = $stateParams.type,
+            id = $stateParams.id;
+
+        function initialize() {
+            LocationsService.getCurrentLocation(type, id).then(function(location){
+                $scope.locationItem = location;
+            });
+        }
+        initialize();
     });
 
 }).call(this, this.angular);

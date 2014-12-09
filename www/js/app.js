@@ -101,7 +101,7 @@
           }
         })
         .state('menu.location', {
-          url: "/locations/:id",
+          url: "/locations/:type/:id",
           views: {
             'menuContent' :{
               templateUrl: "templates/location.html",
