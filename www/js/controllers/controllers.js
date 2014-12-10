@@ -70,10 +70,11 @@
 
     })
 
-    .controller('InvitedCtrl', function($scope, $cordovaContacts, $ionicModal, $ionicPopup, InvitedService) {
+    .controller('InvitedCtrl', function($scope, $localStorage, $cordovaContacts, $ionicModal, $ionicPopup, InvitedService) {
 
       $scope.invitedContacts = [];
       $scope.isHidden = true;
+      var userId = $localStorage.Get('userId');
 
       function isEmpty(data) {
         return _.isEmpty(data) || _.isNull(data) || _.isUndefined(data);
@@ -110,8 +111,8 @@
               $scope.invitedContacts.push(contact);
             }
           });
+          InvitedService.sendSelectedContacts(selectedContacts, userId).then();
           $scope.closePhoneContacts();
-          /*InvitedService.sendSelectedContacts(selectedContacts).then();*/
         }
       };
 
@@ -157,6 +158,7 @@
               emptyInputs();
             });*/
             $scope.invitedContacts.push(contact);
+            InvitedService.sendSelectedContacts($scope.invitedContacts, '114688854124514632382').then();
             $scope.closeInvited();
         };
 
@@ -297,7 +299,7 @@
 
     })
 
-    .controller('LocationCtrl', function ($scope, $timeout, $state, $stateParams, LocationsService) {
+    .controller('LocationCtrl', function ($scope, $q, $timeout, $state, $stateParams, LocationsService) {
         var type = $stateParams.type,
             id = $stateParams.id;
         $scope.isCollapsed = true;
@@ -309,27 +311,41 @@
             });
         }
 
+        function getValidAddress(location) {
+
+            var correctAddress = null,
+                deferred = $q.defer(),
+                address = _.isUndefined(location.address) ? location.city[0] : location.address[0] + ',' + location.city[0];
+                LocationsService.checkAddressValidity(address).then(function(data){
+                  if (data.status === 'OK') {
+                    correctAddress = data.results[0].formatted_address;
+                  } else {
+                    correctAddress = 'Cluj-Napoca';
+                  }
+                  deferred.resolve(correctAddress);
+                });
+
+            return deferred.promise;
+        }
+
         function initMap(location) {
-          var map, geocoder, address;
-            address = _.isUndefined(location.address) ? location.city[0] : location.address[0];
-            if (_.isUndefined(address)) {
-              address = 'Cluj-Napoca';
-            }
-            geocoder = new google.maps.Geocoder();
-            geocoder.geocode({ 'address':  address}, function (results, status) {
-                if (status == google.maps.GeocoderStatus.OK) {
-                    var myOptions = {
-                        zoom: 17,
-                        center: results[0].geometry.location,
-                        mapTypeId: google.maps.MapTypeId.ROADMAP
-                    };
-                    $timeout(function(){
-                        map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-                    }, 500);    
-                } else {
-                    $scope.isCollapsed = true;
-                    alert('Geocode was not successful for the following reason: ' + status);
-                }
+            var map, geocoder;
+            getValidAddress(location).then(function(address){
+                geocoder = new google.maps.Geocoder();
+                geocoder.geocode({ 'address':  address}, function (results, status) {
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        var myOptions = {
+                            zoom: 17,
+                            center: results[0].geometry.location,
+                            mapTypeId: google.maps.MapTypeId.ROADMAP
+                        };
+                        
+                        map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);  
+                    } else {
+                        $scope.isCollapsed = true;
+                        alert('Geocode was not successful for the following reason: ' + status);
+                    }
+                });
             });
         }
 
