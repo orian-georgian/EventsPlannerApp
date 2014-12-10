@@ -5,7 +5,7 @@
     <ion-content class="has-header has-footer" ng-show = "locationItem">
         <div class="list card">
             <div class="item item-avatar clearfix">
-                <img ng-show = "locationItem.address" src="img/location.png" ng-click="showGoogleCalendar(locationItem);">
+                <img ng-show = "locationItem.address" src="img/map-icon.png" ng-click="showGoogleCalendar(locationItem);">
                 <a href  = "" ng-click = "getASimilarLocation(locationItem);"><img class = "pull-right" src="img/twins.png"></a>
                 <h2>{{locationItem.city[0]}}</h2>
                 <p>{{locationItem.address[0]}}</p>
