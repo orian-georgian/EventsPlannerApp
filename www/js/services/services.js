@@ -25,6 +25,14 @@
 		};
 	}]);
 
+	module.factory('$googleMaps', function(){
+		return {
+			initializeMap : function(){
+
+			}
+		}
+	});
+
 	module.service('AuthenticationService', function ($http, $q, $state, $rootScope, $timeout, $localStorage, AuthenticationModel, WeddingService, CONSTANTS){
 
 		var deff = {},
@@ -130,21 +138,42 @@
     		.success(function(data){
     			var user = {
     				userId : data.id,
-    				userName : data.name,
-    				picture : data.picture
+    				userName : data.name
     			}
-    			registerUser(user);
+    			var nonce = getRegisterNonce();
+    			registerUser(user, nonce);
     		})
     		.error(function(error){
 
     		});
 		}
 
-		function registerUser(user) {
+		function getRegisterNonce() {
+			$http({
+				method : 'GET',
+				url : 'http://adclk.com/eventplanner/api/get_nonce/',
+				params : {
+					controller : 'user',
+					method : 'register'
+				}
+			})
+    		.success(function(data){
+    			return data.nonce;
+    		})
+    		.error(function(error){
+
+    		});
+		}
+
+		function registerUser(user, nonce) {
 			$http({
 				method : 'POST',
-				url : '',
-				params : user
+				url : 'http://adclk.com/eventplanner/api/user/register/',
+				params : {
+					userName : user.userName,
+					userId : user.userId,
+					nonce : nonce
+				}
 			})
     		.success(function(data){
     			
@@ -205,7 +234,7 @@
 		this.getPhoneContacts = function() {
 			var result = $q.defer();
 
-			$cordovaContacts.find({filter: ''}).then(function(data) {
+			$cordovaContacts.find({filter: '', multiple: false}).then(function(data) {
            		result.resolve(contactsMapper.mapContacts(data));
 	        }, function(error) {
 	        	result.reject(error);
@@ -270,6 +299,30 @@
 				},
 				params : {
 					json : 'get_post',
+					id : id,
+					post_type : type
+				}
+			})
+			.success(function(data){
+				deferred.resolve(lmapper.mapCurrentLocation(data.post));
+			}).error(function(error){
+				deferred.reject(error);
+			});
+
+			return deferred.promise;
+		};
+
+		this.getSimilarLocation = function(type, id) {
+			var deferred = $q.defer();
+
+			$http({
+				url : 'http://adclk.com/eventplanner/api/post/',
+				method : 'GET',
+				headers: {
+					'Content-type': 'application/jsonp'
+				},
+				params : {
+					json : 'get_similar_post',
 					id : id,
 					post_type : type
 				}

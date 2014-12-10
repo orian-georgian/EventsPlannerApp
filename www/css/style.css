@@ -1,5 +1,10 @@
 /* Empty. Add your own CSS if you like */
 
+#map_canvas {
+	width: 100%;
+	height: 250px;
+}
+
 .main-window {
 	background: #d5d8dd;
 	background: -moz-linear-gradient(top,  #d5d8dd 0%, #ffffff 50%, #d5d8dd 100%);
@@ -193,3 +198,23 @@
     width: 141px;
 }
 
+.transparent {
+  background: transparent !important;
+}
+.image-modal {
+  width: 100% !important;
+  height: 100%;
+  top: 0 !important;
+  left: 0 !important;
+}
+.fullscreen-image {
+  max-width: 100%;
+  max-height: 100%;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  overflow: auto;
+  position: fixed;
+  right: 0;
+  top: 0;
+}

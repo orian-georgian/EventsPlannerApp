@@ -4,18 +4,21 @@
 	</ion-nav-buttons>
     <ion-content class="has-header has-footer" ng-show = "locationItem">
         <div class="list card">
-            <div class="item item-avatar item-icon-right">
-                <img src="img/location.png">
+            <div class="item item-avatar clearfix">
+                <img ng-show = "locationItem.address" src="img/location.png" ng-click="showGoogleCalendar(locationItem);">
+                <a href  = "" ng-click = "getASimilarLocation(locationItem);"><img class = "pull-right" src="img/twins.png"></a>
                 <h2>{{locationItem.city[0]}}</h2>
                 <p>{{locationItem.address[0]}}</p>
                 <p>{{locationItem.phone[0]}}</p>
-                <i ng-show = "locationItem.address" class="icon ion-earth"></i>
-            </div><br/>
-
+                
+            </div>
+            <div class="item item-body" collapse="isCollapsed">
+                <div id="map_canvas"></div>
+            </div>
             <div class="item item-body">
                 <img class="full-image" fallback-src= "img/no-image.png" src="{{locationItem.picture[0]}}">
                 {{locationItem.content | htmlToPlaintext}}
-            </div>
+            </div>   
         </div>
     </ion-content>
     <div class="tabs tabs-icon-top">

@@ -217,7 +217,8 @@
 
     .controller('LocationsCtrl', function ($scope, $stateParams, $ionicScrollDelegate, LocationsService) {
 
-        var post_type = $stateParams.type;
+        var post_type = $stateParams.type,
+            category_post_type = null;
         $scope.page = { currentPage : 1 };
         $scope.numPerPage = 10;
 
@@ -265,8 +266,8 @@
         }
 
 
-        function initialize(currentPage) {
-            LocationsService.getLocationByCategory(post_type, null, $scope.page.currentPage).then(function(data){
+        function initialize(post_type, category, currentPage) {
+            LocationsService.getLocationByCategory(post_type, category, currentPage).then(function(data){
               $scope.locations = data.locations;
               $scope.totalItems = data.count;
               $scope.nrOfPages = data.pages;
@@ -276,37 +277,73 @@
 
 
         $scope.getLocationsByCategory = function(category) {
-
+          category_post_type = category ? category.post_type : null;
           $scope.page = { currentPage : 1 };
           if (category !== null) {
-            LocationsService.getLocationByCategory(post_type, category.post_type, $scope.page.currentPage).then(function(data){
-              $scope.locations = data.locations;
-              $scope.totalItems = data.count;
-              $scope.nrOfPages = data.pages;
-              $ionicScrollDelegate.scrollTop(true);
-            });
+              initialize(post_type, category.post_type, $scope.page.currentPage);
           } else {
-              initialize($scope.page.currentPage);
+              initialize(post_type, null, $scope.page.currentPage);
           }
         };
 
         $scope.$watch('page.currentPage', function(){
-            initialize($scope.page.currentPage);
+            initialize(post_type, category_post_type, $scope.page.currentPage);
         });
 
         getLocationCategories();
 
     })
 
-    .controller('LocationCtrl', function ($scope, $stateParams, LocationsService) {
+    .controller('LocationCtrl', function ($scope, $timeout, $state, $stateParams, LocationsService) {
         var type = $stateParams.type,
             id = $stateParams.id;
+        $scope.isCollapsed = true;
 
         function initialize() {
             LocationsService.getCurrentLocation(type, id).then(function(location){
-                $scope.locationItem = location;
+              initMap(location);
+                $scope.locationItem = location; 
             });
         }
+
+        function initMap(location) {
+          var map, geocoder, address;
+            address = _.isUndefined(location.address) ? location.city[0] : location.address[0];
+            if (_.isUndefined(address)) {
+              address = 'Cluj-Napoca';
+            }
+            geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ 'address':  address}, function (results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    var myOptions = {
+                        zoom: 17,
+                        center: results[0].geometry.location,
+                        mapTypeId: google.maps.MapTypeId.ROADMAP
+                    };
+                    $timeout(function(){
+                        map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+                    }, 500);    
+                } else {
+                    $scope.isCollapsed = true;
+                    alert('Geocode was not successful for the following reason: ' + status);
+                }
+            });
+        }
+
+        $scope.getASimilarLocation = function(location) {
+          LocationsService.getSimilarLocation(location.type, location.id).then(function(result){
+            $state.go('menu.location', { type : result.type, id : result.id });        
+            $scope.locationItem = result;
+          });
+        };
+
+        $scope.showGoogleCalendar = function(location) {
+            $scope.isCollapsed = !$scope.isCollapsed;
+            if (!$scope.isCollapsed) {
+                initMap(location);
+            }      
+        };
+
         initialize();
     });
 

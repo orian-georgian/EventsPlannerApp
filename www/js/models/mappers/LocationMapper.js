@@ -12,7 +12,7 @@
 			var locationsArray = [],
 				locationObject = new LocationObject();
 
-			locationObject.count = dto.count;
+			locationObject.count = dto.count_total;
 			locationObject.pages = dto.pages;
 
 			_.each(dto.posts, function(data){

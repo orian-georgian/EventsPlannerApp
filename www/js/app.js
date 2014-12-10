@@ -1,6 +1,17 @@
 (function(angular){
 
-    var module = angular.module('eventsPlanner', ['ionic', 'ngCordova', 'events.directives', 'events.models', 'events.controllers', 'events.services', 'ui.bootstrap.pagination', 'template/pagination/pager.html', 'template/pagination/pagination.html'])
+    var module = angular.module('eventsPlanner', [
+      'ionic',
+      'ngCordova',
+      'events.directives',
+      'events.models',
+      'events.controllers',
+      'events.services',
+      'ui.bootstrap.pagination',
+      'template/pagination/pager.html',
+      'template/pagination/pagination.html',
+      'ui.bootstrap.collapse'
+      ]);
 
     module.constant('CONSTANTS', {
       CLIENT_ID : '285780208615-tuarvu02t2ou4eonj0tel7905hch1st5.apps.googleusercontent.com',
