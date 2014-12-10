@@ -71,13 +71,6 @@
 	color: black;
 }
 
-	.form-modal .budget-input {
-		border: 1px solid black;
-		text-align: center;
-		font-weight: 700;
-		
-	}
-
 .menu-container {
 	font-weight: 600;
 	font-size: 19px;
@@ -183,8 +176,9 @@
 }
 /* overwrite */
 .has-header {
-    margin-top: 40px;
+    margin-top: 0px;
 }
+
 .menu-left .has-header {
     margin-top: 0;
 }

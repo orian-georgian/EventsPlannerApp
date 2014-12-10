@@ -24,11 +24,14 @@
       }
       
      
-      $ionicModal.fromTemplateUrl('templates/weddingPlan.html', {
-        scope: $scope
-      }).then(function(modal) {
-        $scope.weddingPlanModal = modal;
-      });
+     $ionicModal.fromTemplateUrl('templates/locationSuggest.html', function($ionicModal) {
+        $scope.weddingPlanModal = $ionicModal;
+    }, {
+        // Use our scope for the scope of the modal to keep it simple
+        scope: $scope,
+        // The animation we want to use for the modal entrance
+        animation: 'slide-in-up'
+    });
 
       $scope.logout = function() {
         var confirmPopup = $ionicPopup.confirm({
