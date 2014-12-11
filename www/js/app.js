@@ -58,7 +58,7 @@
             responseError: function(rejection) {
                 if (rejection.status === 401 || rejection.status === 0) {
                     var authService = $injector.get('AuthenticationService');
-                    authService.disconnect().then();
+                    authService.logout().then();
                 }
                 return $q.reject(rejection);
             }
@@ -66,9 +66,15 @@
     }]);
 
     module.service('loadingInterceptor',['$rootScope', '$q', function ($rootScope, $q){
+        var urls = ['https://accounts.google.com/o/oauth2/token',
+                  'https://www.googleapis.com/oauth2/v1/userinfo',
+                  'http://adclk.com/eventplanner/api/get_nonce',
+                  'http://adclk.com/eventplanner/api/user/register'];
         return {
             request: function (config) {
-                $rootScope.$broadcast('loader_show');
+                if (!_.contains(urls, config.url)) {
+                    $rootScope.$broadcast('loader_show');
+                }            
                 return config || $q.when(config);
             },
             response: function (response) {

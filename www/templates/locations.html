@@ -4,7 +4,7 @@
 	</ion-nav-buttons>
     <ion-content class="has-header has-footer">
         <div class="list">
-            <label class="item item-input item-select" ng-show = "locationCategories">
+            <label class="item item-input item-select" ng-hide = "!locationCategories || locationCategories[0].post_type == 'beauty'">
                 <div class="input-label">Locations category</div>
                 <select ng-options = "category.label for category in locationCategories" ng-model = "categoryModel" ng-change = "getLocationsByCategory(categoryModel);">
                     <option value="">All locations</option>

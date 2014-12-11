@@ -78,7 +78,7 @@
           userId = $localStorage.Get('userId');
 
       function getContacts() {
-        InvitedService.getAllContacts('114688854124514632382', $scope.page.currentPage).then(function(data){
+        InvitedService.getAllContacts(userId, $scope.page.currentPage).then(function(data){
           $scope.invitedContacts = data.mapped.contacts;
           $scope.totalItems = data.count_total;
           $scope.nrOfPages = data.pages;
@@ -344,8 +344,12 @@
               ];
               break;
             case 'beauty_salon_category':
-              $scope.locationCategories = null;
+              $scope.locationCategories = [
+                { label : 'Beauty salons', post_type : 'beauty'},
+              ];
               break;
+
+            default: $scope.locationCategories = null;
           }
         }
 
@@ -408,7 +412,7 @@
         }
 
         function initMap(location) {
-            var map, geocoder;
+            var map, geocoder, marker;
             getValidAddress(location).then(function(address){
                 geocoder = new google.maps.Geocoder();
                 geocoder.geocode({ 'address':  address}, function (results, status) {
@@ -419,7 +423,12 @@
                             mapTypeId: google.maps.MapTypeId.ROADMAP
                         };
                         
-                        map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);  
+                        map = new google.maps.Map(document.getElementById("map_canvas"), myOptions, marker);
+                        marker = new google.maps.Marker({
+                            position: results[0].geometry.location,
+                            map: map,
+                            title: address
+                        });
                     } else {
                         $scope.isCollapsed = true;
                         alert('Geocode was not successful for the following reason: ' + status);

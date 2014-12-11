@@ -60,16 +60,7 @@
 
 		this.logout = function(){
 			deff = $q.defer();
-			$state.go('event');
-			AuthenticationModel.isLoggedIn = false;
-			$localStorage.Zap('token');
-			$localStorage.Zap('userId');
-			return deff.promise;
-		};
-
-		this.disconnect = function(){
-			deff = $q.defer();
-			$state.go('event');
+			$state.go('event', {}, {reload: true});
 			AuthenticationModel.isLoggedIn = false;
 			$localStorage.Zap('token');
 			$localStorage.Zap('userId');
