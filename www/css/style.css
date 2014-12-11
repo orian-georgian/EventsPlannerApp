@@ -318,10 +318,12 @@ label.wish .range-positive{
 }
 
 .bar.bar-stable {
-   
+    background-image: none !important;
+    border-color: #b2b2b2;
+    color: #444;
 }
 .locations .bar.bar-stable {
-    background-color: red !important;
+    background-color: pink !important;
 }
 h1.orange{
 		color:#e86900 !important;
