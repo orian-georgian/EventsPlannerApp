@@ -23,10 +23,15 @@
                     </div>
                     <div class = "col col-80">
                         <strong>{{contact.fullName}}</strong> - <span>{{contact.phoneNumber}}</span><br/>
-                        <a ng-hide = "contact.wasInvited" href = "" ng-click = "confirmInvitation(contact);"><span>Not invited <i class="icon ion-checkmark-circled"></i></span></a>
-                        <a ng-show = "contact.wasInvited" href = "" ng-click = "denyInvitation(contact);"><span>Invited <i class="icon ion-close-circled"></i></span></a><br/>
-                        <a ng-hide = "contact.hasConfirmed" href = "" ng-click = "confirmConfirmation(contact);"><span>Hasn't confirmed <i class="icon ion-checkmark-circled"></i></span></a>
-                        <a ng-show = "contact.hasConfirmed" href = "" ng-click = "denyConfirmation(contact);"><span>Has confirmed <i class="icon ion-close-circled"></i></span></a>
+
+                        <a href = "" ng-click = "changeInvitation(contact);">
+                            <span ng-hide = "contact.wasInvited">Not invited <i class="icon ion-checkmark-circled"></i></span>
+                            <span ng-show = "contact.wasInvited">Invited <i class="icon ion-close-circled"></i></span>
+                        </a><br/>
+                        <a href = "" ng-click = "changeConfirmation(contact);">
+                            <span ng-hide = "contact.hasConfirmed">Hasn't confirmed <i class="icon ion-checkmark-circled"></i></span>
+                            <span ng-show = "contact.hasConfirmed">Has confirmed <i class="icon ion-close-circled"></i></span>
+                        </a>
                     </div>
                     <div class =  "col-col-20">
                         <a class="button button-positive" ng-href="tel:{{contact.phoneNumber}}">
@@ -34,6 +39,9 @@
                         </a>
                     </div>
                 </div>
+            </div>
+            <div class = "item text-center" ng-show = "invitedContacts">
+                <pagination boundary-links="true" num-pages = "nrOfPages" max-size = "5"  total-items="totalItems" ng-model="page.currentPage" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
             </div>
         </div>
     </ion-content>

@@ -15,10 +15,10 @@
 				contact.phoneNumber = d.phoneNumbers ? d.phoneNumbers[0].value : null;
 				contact.mailAddress = d.emails ? d.emails[0].value : null;
 				contact.contactId = contact.fullName + contact.phoneNumber;
-				contact.hasConfirmed = 0;
+				contact.hasConfirmed = '0';
 				contact.homeAddress = d.addresses ? d.addresses[0].value : null;
-				contact.wasInvited = 0;
-				contact.tableNumber = 0;
+				contact.wasInvited = '0';
+				contact.tableNumber = '0';
 				contactsList.push(contact);
 			});
 			return contactsList;
@@ -39,7 +39,7 @@
 				contact.mailAddress = post.custom_fields.mailaddress[0];
 				contact.contactId = post.custom_fields.id[0];
 				contact.hasConfirmed = contact.parseToBoolean(post.custom_fields.hasconfirmed[0]);
-				contact.homeAddress = post.custom_fields.homeaddress[0];
+				contact.homeAddress = _.isUndefined(post.custom_fields.homeaddress) ? null : post.custom_fields.homeaddress[0];
 				contact.wasInvited = contact.parseToBoolean(post.custom_fields.wasinvited[0]);
 				contact.tableNumber = contact.parseToInt(post.custom_fields.tablenumber[0]);
 				contactsArray.push(contact);
@@ -50,18 +50,39 @@
 			return contactObject;
 		}
 
+		function unmapContactsList(contacts) {
+			var array = [];
+			_.each(contacts, function(post){
+				var contact = new Contact();
+				contact.fullName = post.custom_fields.fullname[0];
+				contact.phoneNumber = post.custom_fields.phonenumber[0];
+				contact.mailAddress = post.custom_fields.mailaddress[0];
+				contact.contactId = post.custom_fields.id[0];
+				contact.hasConfirmed = contact.parseBoolToString(post.custom_fields.hasconfirmed[0]);
+				contact.homeAddress = _.isUndefined(post.custom_fields.homeaddress) ? null : post.custom_fields.homeaddress[0];
+				contact.wasInvited = contact.parseBoolToString(post.custom_fields.wasinvited[0]);
+				contact.tableNumber = contact.parseIntToString(post.custom_fields.tablenumber[0]);
+				array.push(contact);
+			});
+			return array;
+		}
+
 		function unmapContacts(contacts) {
-			var contactsToSend = [], data = {};
+
+			var contactsToSend = [],
+				data = {},
+				ctc = new Contact();
+			contacts = _.isUndefined(contacts[0].attachments) ? contacts : unmapContactsList(contacts);
 			_.each(contacts, function(c) {
 				data = {
 					fullName : c.fullName,
 					phoneNumber : c.phoneNumber,
 					mailAddress : c.mailAddress,
 					contactId : c.contactId,
-					hasConfirmed : c.hasConfirmed,
-					wasInvited : c.wasInvited,
+					hasConfirmed : ctc.parseBoolToString(c.hasConfirmed),
+					wasInvited : ctc.parseBoolToString(c.wasInvited),
 					homeAddress : c.homeAddress,
-					tableNumber : c.tableNumber
+					tableNumber : ctc.parseIntToString(c.tableNumber)
 				};
 				contactsToSend.push(data);
 			});

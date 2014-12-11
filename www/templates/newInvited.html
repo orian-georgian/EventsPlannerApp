@@ -2,7 +2,7 @@
   <ion-header-bar class="bar-positive">
     <h1 class="title">Save invited</h1>
     <div class="buttons">
-      <button class="button button-clear" ng-click="closeInvited()">Close</button>
+      <button class="button button-clear" ng-click="closeInvited();">Close</button>
     </div>
   </ion-header-bar>
   <ion-content>
@@ -26,7 +26,7 @@
             <input type="text" name = "address" ng-model="invitedPerson.homeAddress" placeholder = "Home address">
           </label>
           <button ng-show = "isHidden" class="button button-positive button-block text-center" type="button" ng-click = "addNewInvited(invitedPerson);" ng-disabled = "invitedForm.$invalid">Add</button>
-          <button ng-hide = "isHidden" class="button button-positive button-block text-center" type="button" ng-click = "saveContact(invitedPerson);">Save</button>
+          <button ng-hide = "isHidden" class="button button-positive button-block text-center" type="button" ng-click = "saveContact(invitedPerson);" ng-disabled = "invitedForm.$invalid">Save</button>
       </div>
     </form>
   </ion-content>

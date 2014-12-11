@@ -21,6 +21,14 @@
 			return parseInt(string, 10);
 		};
 
+		this.parseBoolToString = function(bool) {
+			return bool == false ? '0' : '1'; 
+		};
+
+		this.parseIntToString = function(number) {
+			return number.toString();
+		};
+
 	}
 
 	this.Contact = Contact;

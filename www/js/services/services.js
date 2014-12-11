@@ -240,14 +240,15 @@
 			return result.promise;
 		};
 
-		this.getAllContacts = function(userId) {
+		this.getAllContacts = function(userId, pageNumber) {
 			var result = $q.defer();
 			$http({
 				url : 'http://adclk.com/eventplanner/api/get_author_posts/',
 				method : 'GET',
 				params : {
 					slug : userId,
-					post_type : 'contact'
+					post_type : 'contact',
+					page : pageNumber
 				}
 			}).success(function(data){
 				result.resolve({mapped : contactsMapper.mapServerContacts(data), unmapped: data.posts});
@@ -263,6 +264,7 @@
 					contacts : contactsMapper.unmapContacts(contacts)
 				};
 			var result = $q.defer();
+			
 			$http({
 				withCredentials: false,
 				url : 'http://adclk.com/eventplanner/api/posts/create_contacts/',
@@ -277,16 +279,19 @@
 			return result.promise;
 		};
 
-		this.saveContactChanges = function(userId, contactId, contact) {
+		this.saveContactChanges = function(userId, contactId, contacts) {
+			var data = {
+				userId : userId,
+				contactId : contactId,
+				contacts : contactsMapper.unmapContacts(contacts)
+			};
 			var result = $q.defer();
 			$http({
-				url : 'http://adclk.com/eventplanner/api/posts/update_contact/',
+				withCredentials: false,
+				url : 'http://adclk.com/eventplanner/api/posts/update_contact',
 				method : 'POST',
-				params : {
-					userId : userId,
-					contactId : contactId,
-					contact : contact
-				}
+				data : JSON.stringify(data),
+				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).success(function(data){
 				result.resolve(data);
 			}).error(function(error){
@@ -296,14 +301,16 @@
 		};
 
 		this.removeContact = function(userId, contactId) {
+			var data = {
+				userId : userId,
+				contactId : contactId
+			};
 			var result = $q.defer();
 			$http({
 				url : 'http://adclk.com/eventplanner/api/posts/delete_contact',
 				method : 'POST',
-				params : {
-					userId : userId,
-					contactId : contactId
-				}
+				data : JSON.stringify(data),
+				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).success(function(data){
 				result.resolve(data);
 			}).error(function(error){
