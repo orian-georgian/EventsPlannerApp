@@ -1,4 +1,4 @@
-(function(angular){	
+(function(angular, $){	
 
 	var module = angular.module('events.services', []),
 		mapper = this.ContactsMapper,
@@ -240,12 +240,70 @@
 			return result.promise;
 		};
 
-		this.sendSelectedContacts = function(contacts, userId) {
+		this.getAllContacts = function(userId) {
 			var result = $q.defer();
 			$http({
-				url : 'http://adclk.com/eventplanner/api/posts/create_contacts/' + userId,
+				url : 'http://adclk.com/eventplanner/api/get_author_posts/',
+				method : 'GET',
+				params : {
+					slug : userId,
+					post_type : 'contact'
+				}
+			}).success(function(data){
+				result.resolve({mapped : contactsMapper.mapServerContacts(data), unmapped: data.posts});
+			}).error(function(error){
+				result.reject(error);
+			});
+			return result.promise;
+		};
+
+		this.sendSelectedContacts = function(contacts, userId) {
+			var data = {
+					userId : userId,
+					contacts : contactsMapper.unmapContacts(contacts)
+				};
+			var result = $q.defer();
+			$http({
+				withCredentials: false,
+				url : 'http://adclk.com/eventplanner/api/posts/create_contacts/',
 				method : 'POST',
-				data : userId
+				data : JSON.stringify(data),
+				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+			}).success(function(data){
+				result.resolve(data);
+			}).error(function(error){
+				result.reject(error);
+			});
+			return result.promise;
+		};
+
+		this.saveContactChanges = function(userId, contactId, contact) {
+			var result = $q.defer();
+			$http({
+				url : 'http://adclk.com/eventplanner/api/posts/update_contact/',
+				method : 'POST',
+				params : {
+					userId : userId,
+					contactId : contactId,
+					contact : contact
+				}
+			}).success(function(data){
+				result.resolve(data);
+			}).error(function(error){
+				result.reject(error);
+			});
+			return result.promise;
+		};
+
+		this.removeContact = function(userId, contactId) {
+			var result = $q.defer();
+			$http({
+				url : 'http://adclk.com/eventplanner/api/posts/delete_contact',
+				method : 'POST',
+				params : {
+					userId : userId,
+					contactId : contactId
+				}
 			}).success(function(data){
 				result.resolve(data);
 			}).error(function(error){
@@ -358,4 +416,4 @@
 
 	});
 
-}).call(this, this.angular);
+}).call(this, this.angular, this.jQuery);

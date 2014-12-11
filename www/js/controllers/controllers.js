@@ -74,10 +74,26 @@
 
       $scope.invitedContacts = [];
       $scope.isHidden = true;
-      var userId = $localStorage.Get('userId');
+      var originalContacts = null,
+          userId = $localStorage.Get('userId');
+
+      function getContacts() {
+        InvitedService.getAllContacts('114688854124514632382').then(function(data){
+          $scope.invitedContacts = data.mapped.contacts;
+          originalContacts = data.unmapped;
+        });
+      }
 
       function isEmpty(data) {
         return _.isEmpty(data) || _.isNull(data) || _.isUndefined(data);
+      }
+
+      function parseBoolToString(bool) {
+        return bool === false ? '0' : '1'; 
+      }
+
+      function parseIntToString(number) {
+        return number.toString();
       }
 
       $ionicModal.fromTemplateUrl('templates/phoneContacts.html', {
@@ -143,23 +159,22 @@
         };
 
         $scope.addNewInvited = function(invitedPerson) {
-            var contact = {
+            var contactsList = [],
+            contact = {
                 contactId : invitedPerson.fullName + invitedPerson.phoneNumber,
                 fullName : invitedPerson.fullName,
                 phoneNumber : invitedPerson.phoneNumber,
                 mailAddress : invitedPerson.mailAddress,
                 homeAddress : invitedPerson.homeAddress,
-                hasConfirmed : false,
-                tableNumber : null,
-                wasInvited : false
+                hasConfirmed : 0,
+                tableNumber : 0,
+                wasInvited : 0
             };
-            /*InvitedService.addNewContact(contact).then(function(){
-              $scope.closeInvited();
+            contactsList.push(contact);
+            InvitedService.sendSelectedContacts(contactsList, '114688854124514632382').then(function(){
               emptyInputs();
-            });*/
-            $scope.invitedContacts.push(contact);
-            InvitedService.sendSelectedContacts($scope.invitedContacts, '114688854124514632382').then();
-            $scope.closeInvited();
+              $scope.closeInvited();
+            });    
         };
 
         $scope.editContact = function(currentContact) {
@@ -179,9 +194,25 @@
         };
 
         $scope.saveContact = function(currentContact) {
-          var wantedInvited = _.find($scope.invitedContacts, { contactId : currentContact.contactId} ); 
-          _.merge(wantedInvited, currentContact);
-          $scope.closeInvited();
+          currentContact.hasConfirmed = parseBoolToString(currentContact.hasConfirmed);
+          currentContact.wasInvited = parseBoolToString(currentContact.wasInvited);
+          currentContact.tableNumber = parseIntToString(currentContact.tableNumber);
+          var originalContact = _.find(originalContacts, function(contact){
+            return contact.custom_fields.id[0] === currentContact.contactId;
+          });
+          originalContact.custom_fields.id[0] = currentContact.contactId;
+          originalContact.custom_fields.fullname[0] = currentContact.fullName;
+          originalContact.custom_fields.phonenumber[0] = currentContact.phoneNumber;
+          originalContact.custom_fields.mailaddress[0] = currentContact.mailAddress;
+          originalContact.custom_fields.homeaddress[0] = currentContact.homeAddress;
+          originalContact.custom_fields.hasconfirmed[0] = currentContact.hasConfirmed;
+          originalContact.custom_fields.tablenumber[0] = currentContact.tableNumber;
+          originalContact.custom_fields.wasinvited[0] = currentContact.wasInvited;
+          console.log(originalContact);
+          InvitedService.saveContactChanges(114688854124514632382, originalContact.id, originalContact).then(function(){
+            $scope.closeInvited();
+            getContacts();
+          });      
         };
 
         $scope.removeContact = function(currentContact) {
@@ -191,9 +222,7 @@
           });
           confirmPopup.then(function(res) {
             if(res) {
-              var index = $scope.invitedContacts.indexOf(currentContact);
-              $scope.invitedContacts.splice(index, 1);
-              /*InvitedService.removeContact(currentContact.contactId).then(initialize);*/
+              InvitedService.removeContact(114688854124514632382, currentContact.contactId).then(getContacts);
             } else {
               return;
             }
@@ -217,6 +246,8 @@
         };
 
         $scope.isEmpty = isEmpty;
+
+        getContacts();
 
     })
 
@@ -299,7 +330,7 @@
 
     })
 
-    .controller('LocationCtrl', function ($scope, $q, $timeout, $state, $stateParams, LocationsService) {
+    .controller('LocationCtrl', function ($scope, $q, $timeout, $state, $ionicModal, $stateParams, LocationsService) {
         var type = $stateParams.type,
             id = $stateParams.id;
         $scope.isCollapsed = true;
@@ -362,6 +393,21 @@
                 initMap(location);
             }      
         };
+
+        $ionicModal.fromTemplateUrl('image-modal.html', {
+      scope: $scope,
+      animation: 'slide-in-up'
+    }).then(function(modal) {
+      $scope.modal = modal;
+    });
+
+    $scope.openModal = function() {
+      $scope.modal.show();
+    };
+
+    $scope.closeModal = function() {
+      $scope.modal.hide();
+    };
 
         initialize();
     });

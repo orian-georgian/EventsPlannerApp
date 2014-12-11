@@ -2,7 +2,8 @@
 
 	'use strict';
 
-	var Contact =  this.Contact;
+	var Contact =  this.Contact,
+		ContactObject = this.ContactObject;
 
 	function ContactsMapper() {
 
@@ -14,13 +15,39 @@
 				contact.phoneNumber = d.phoneNumbers ? d.phoneNumbers[0].value : null;
 				contact.mailAddress = d.emails ? d.emails[0].value : null;
 				contact.contactId = contact.fullName + contact.phoneNumber;
-				contact.hasConfirmed = false;
+				contact.hasConfirmed = 0;
 				contact.homeAddress = d.addresses ? d.addresses[0].value : null;
-				contact.wasInvited = false;
-				contact.tableNumber = null;
+				contact.wasInvited = 0;
+				contact.tableNumber = 0;
 				contactsList.push(contact);
 			});
 			return contactsList;
+		}
+
+		function mapServerContacts(dto) {
+			var contactsArray = [],
+				contactObject = new ContactObject();
+
+			contactObject.pages = dto.pages;
+			contactObject.count = dto.count;
+			contactObject.count_total = dto.count_total;
+
+			_.each(dto.posts, function(post){
+				var contact = new Contact();
+				contact.fullName = post.custom_fields.fullname[0];
+				contact.phoneNumber = post.custom_fields.phonenumber[0];
+				contact.mailAddress = post.custom_fields.mailaddress[0];
+				contact.contactId = post.custom_fields.id[0];
+				contact.hasConfirmed = contact.parseToBoolean(post.custom_fields.hasconfirmed[0]);
+				contact.homeAddress = post.custom_fields.homeaddress[0];
+				contact.wasInvited = contact.parseToBoolean(post.custom_fields.wasinvited[0]);
+				contact.tableNumber = contact.parseToInt(post.custom_fields.tablenumber[0]);
+				contactsArray.push(contact);
+			});
+
+			contactObject.contacts = contactsArray;
+
+			return contactObject;
 		}
 
 		function unmapContacts(contacts) {
@@ -43,6 +70,7 @@
 
 		this.mapContacts = mapContacts;
 		this.unmapContacts = unmapContacts;
+		this.mapServerContacts = mapServerContacts;
 
 	}
 

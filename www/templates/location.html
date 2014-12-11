@@ -16,10 +16,17 @@
                 <div id="map_canvas"></div>
             </div>
             <div class="item item-body">
-                <img class="full-image" fallback-src= "img/no-image.png" src="{{locationItem.picture[0]}}">
+                <img class="full-image" ng-click = "openModal();" ng-show = "locationItem.picture" src="{{locationItem.picture[0]}}">
                 {{locationItem.content | htmlToPlaintext}}
             </div>   
         </div>
+        <script id="image-modal.html" type="text/ng-template">
+              <div class="image-modal transparent" ng-click="closeModal()">
+                  <ion-pane class="transparent">
+                     <img ng-src="{{locationItem.picture[0]}}" class="fullscreen-image"/>
+                  </ion-pane>
+              </div>
+          </script>
     </ion-content>
     <div class="tabs tabs-icon-top">
     	<a class="tab-item" ng-href = "" ng-click = "goBack();">
