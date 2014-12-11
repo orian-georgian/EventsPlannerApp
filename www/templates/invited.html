@@ -17,11 +17,7 @@
             </div> -->
             <div ng-show = "!isEmpty(invitedContacts)" class="item item-body item-icon" ng-repeat = "contact in invitedContacts | orderBy : 'fullName'">
                 <div class = "row">
-                    <div class = "col col-10 invited-icons">
-                        <a href = "" ng-click = "editContact(contact);"><i class="icon ion-compose"></i></a>
-                        <a href = "" ng-click = "removeContact(contact);"><i class="icon ion-ios7-trash"></i></a>
-                    </div>
-                    <div class = "col col-80">
+                    <div class = "col col-90">
                         <strong>{{contact.fullName}}</strong> - <span>{{contact.phoneNumber}}</span><br/>
 
                         <a href = "" ng-click = "changeInvitation(contact);">
@@ -31,7 +27,9 @@
                         <a href = "" ng-click = "changeConfirmation(contact);">
                             <span ng-hide = "contact.hasConfirmed">Hasn't confirmed <i class="icon ion-checkmark-circled"></i></span>
                             <span ng-show = "contact.hasConfirmed">Has confirmed <i class="icon ion-close-circled"></i></span>
-                        </a>
+                        </a><br/>
+                        <a href = "" ng-click = "editContact(contact);"><span>Edit <i class="icon ion-compose"></i></span></a>
+                        <a href = "" ng-click = "removeContact(contact);"><span>Remove <i class="icon ion-ios7-trash"></i></span></a>
                     </div>
                     <div class =  "col-col-20">
                         <a class="button button-positive" ng-href="tel:{{contact.phoneNumber}}">

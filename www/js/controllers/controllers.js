@@ -78,7 +78,7 @@
           userId = $localStorage.Get('userId');
 
       function getContacts() {
-        InvitedService.getAllContacts(userId, $scope.page.currentPage).then(function(data){
+        InvitedService.getAllContacts('114688854124514632382', $scope.page.currentPage).then(function(data){
           $scope.invitedContacts = data.mapped.contacts;
           $scope.totalItems = data.count_total;
           $scope.nrOfPages = data.pages;
@@ -104,6 +104,14 @@
             return contact.custom_fields.id[0] === currentContact.contactId;
           });
         return originalContact;
+      }
+
+      function getContactsIds(contacts) {
+        var array = [];
+        _.each(contacts, function(ctc){
+          array.push(ctc.contactId);
+        });
+        return array;
       }
 
       $ionicModal.fromTemplateUrl('templates/phoneContacts.html', {
@@ -132,7 +140,9 @@
            template: 'Please select some contacts to add!'
          });
         } else {
-          if (_.intersection($scope.phoneContacts, selectedContacts)) {
+          var all = getContactsIds($scope.invitedContacts),
+              phone = getContactsIds($scope.phoneContacts);
+          if (!isEmpty(_.intersection(all, phone))) {
               $ionicPopup.alert({
                title: 'Attention!',
                template: 'Some contacts was already added!'
@@ -417,6 +427,10 @@
                 });
             });
         }
+
+        $scope.initMap = function(location) {
+          initMap(location);
+        };
 
         $scope.getASimilarLocation = function(location) {
           LocationsService.getSimilarLocation(location.type, location.id).then(function(result){
