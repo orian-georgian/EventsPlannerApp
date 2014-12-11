@@ -5,21 +5,28 @@
     <ion-content class="has-header has-footer" ng-show = "locationItem">
         <div class="list card">
             <div class="item item-avatar clearfix">
-                <img ng-show = "locationItem.address" src="img/location.png" ng-click="showGoogleCalendar(locationItem);">
+                <img ng-show = "locationItem.address" src="img/map-icon.png" ng-click="showGoogleCalendar(locationItem);">
                 <a href  = "" ng-click = "getASimilarLocation(locationItem);"><img class = "pull-right" src="img/twins.png"></a>
                 <h2>{{locationItem.city[0]}}</h2>
                 <p>{{locationItem.address[0]}}</p>
                 <p>{{locationItem.phone[0]}}</p>
                 
             </div>
-            <div class="item item-body" collapse="isCollapsed">
+            <div class="item item-body" collapse="isCollapsed" ng-click = "initMap(locationItem);">
                 <div id="map_canvas"></div>
             </div>
             <div class="item item-body">
-                <img class="full-image" fallback-src= "img/no-image.png" src="{{locationItem.picture[0]}}">
+                <img class="full-image" ng-click = "openModal();" ng-show = "locationItem.picture" src="{{locationItem.picture[0]}}">
                 {{locationItem.content | htmlToPlaintext}}
             </div>   
         </div>
+        <script id="image-modal.html" type="text/ng-template">
+              <div class="image-modal transparent" ng-click="closeModal()">
+                  <ion-pane class="transparent">
+                     <img ng-src="{{locationItem.picture[0]}}" class="fullscreen-image"/>
+                  </ion-pane>
+              </div>
+          </script>
     </ion-content>
     <div class="tabs tabs-icon-top">
     	<a class="tab-item" ng-href = "" ng-click = "goBack();">

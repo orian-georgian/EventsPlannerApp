@@ -1,4 +1,4 @@
-(function(angular){	
+(function(angular, $){	
 
 	var module = angular.module('events.services', []),
 		mapper = this.ContactsMapper,
@@ -59,23 +59,11 @@
 		}
 
 		this.logout = function(){
-			var authModel = $localStorage.Get('token');
 			deff = $q.defer();
-			$http({
-				url : 'https://accounts.google.com/o/oauth2/revoke',
-				method : 'GET',
-				params : {
-					token : authModel.token
-				}
-			}).success(function(data){
-				deff.resolve(data);
-				$state.go('event');
-				AuthenticationModel.isLoggedIn = false;
-				$localStorage.Zap('token');
-			}).error(function(error){
-				deff.reject(error);
-				this.disconnect().then();
-			});
+			$state.go('event');
+			AuthenticationModel.isLoggedIn = false;
+			$localStorage.Zap('token');
+			$localStorage.Zap('userId');
 			return deff.promise;
 		};
 
@@ -84,6 +72,7 @@
 			$state.go('event');
 			AuthenticationModel.isLoggedIn = false;
 			$localStorage.Zap('token');
+			$localStorage.Zap('userId');
 			return deff.promise;
 		};
 
@@ -108,6 +97,7 @@
 		}*/
 
 		function getToken(requestToken){
+
 			$http({
 				method: "post",
 				url: "https://accounts.google.com/o/oauth2/token",
@@ -140,8 +130,10 @@
     				userId : data.id,
     				userName : data.name
     			}
-    			var nonce = getRegisterNonce();
-    			registerUser(user, nonce);
+    			$localStorage.Set('userId', data.id);
+    			getRegisterNonce().then(function(nonce){
+    				registerUser(user, nonce).then();
+    			});
     		})
     		.error(function(error){
 
@@ -149,6 +141,7 @@
 		}
 
 		function getRegisterNonce() {
+			deff = $q.defer();
 			$http({
 				method : 'GET',
 				url : 'http://adclk.com/eventplanner/api/get_nonce/',
@@ -158,14 +151,16 @@
 				}
 			})
     		.success(function(data){
-    			return data.nonce;
+    			deff.resolve(data.nonce);
     		})
     		.error(function(error){
-
+    			deff.reject(error);
     		});
+    		return deff.promise;
 		}
 
 		function registerUser(user, nonce) {
+			deff = $q.defer();
 			$http({
 				method : 'POST',
 				url : 'http://adclk.com/eventplanner/api/user/register/',
@@ -176,11 +171,13 @@
 				}
 			})
     		.success(function(data){
-    			
+    			deff.resolve(data);
     		})
     		.error(function(error){
-
+    			deff.reject(error);
     		});
+
+    		return deff.promise;
 		}
 
 		$http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
@@ -243,12 +240,77 @@
 			return result.promise;
 		};
 
-		this.sendSelectedContacts = function(contacts) {
+		this.getAllContacts = function(userId, pageNumber) {
 			var result = $q.defer();
 			$http({
-				url : '',
+				url : 'http://adclk.com/eventplanner/api/get_author_posts/',
+				method : 'GET',
+				params : {
+					slug : userId,
+					post_type : 'contact',
+					page : pageNumber
+				}
+			}).success(function(data){
+				result.resolve({mapped : contactsMapper.mapServerContacts(data), unmapped: data.posts});
+			}).error(function(error){
+				result.reject(error);
+			});
+			return result.promise;
+		};
+
+		this.sendSelectedContacts = function(contacts, userId) {
+			var data = {
+					userId : userId,
+					contacts : contactsMapper.unmapContacts(contacts)
+				};
+			var result = $q.defer();
+			
+			$http({
+				withCredentials: false,
+				url : 'http://adclk.com/eventplanner/api/posts/create_contacts/',
 				method : 'POST',
-				data : contactsMapper.unmapContacts(contacts)
+				data : JSON.stringify(data),
+				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+			}).success(function(data){
+				result.resolve(data);
+			}).error(function(error){
+				result.reject(error);
+			});
+			return result.promise;
+		};
+
+		this.saveContactChanges = function(userId, contactId, contacts) {
+			var data = {
+				userId : userId,
+				contactId : contactId,
+				contacts : contactsMapper.unmapContacts(contacts)
+			};
+			var result = $q.defer();
+			$http({
+				withCredentials: false,
+				url : 'http://adclk.com/eventplanner/api/posts/update_contact',
+				method : 'POST',
+				data : JSON.stringify(data),
+				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+			}).success(function(data){
+				result.resolve(data);
+			}).error(function(error){
+				result.reject(error);
+			});
+			return result.promise;
+		};
+
+		this.removeContact = function(userId, contactId) {
+			var data = {
+				userId : userId,
+				contactId : contactId
+			};
+			var result = $q.defer();
+			$http({
+				url : 'http://adclk.com/eventplanner/api/posts/delete_contact',
+				method : 'POST',
+				data : JSON.stringify(data),
+				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
 			}).success(function(data){
 				result.resolve(data);
 			}).error(function(error){
@@ -336,6 +398,29 @@
 			return deferred.promise;
 		};
 
+		this.checkAddressValidity = function(address) {
+			var deferred = $q.defer();
+
+			$http({
+				url : 'http://maps.googleapis.com/maps/api/geocode/json',
+				method : 'GET',
+				headers: {
+					'Content-type': 'application/jsonp'
+				},
+				params : {
+					address : address,
+					sensor : false
+				}
+			})
+			.success(function(data){
+				deferred.resolve(data);
+			}).error(function(error){
+				deferred.reject(error);
+			});
+
+			return deferred.promise;
+		};
+
 	});
 
-}).call(this, this.angular);
+}).call(this, this.angular, this.jQuery);

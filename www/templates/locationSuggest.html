@@ -1,0 +1,30 @@
+<ion-view class = "form-modal">
+    <ion-header-bar class="bar-positive">
+        <h1 class="title">Location suggestion</h1>
+        <div class="buttons">
+            <button class="button button-clear" ng-click="closeWeddingPlan()">Close</button>
+        </div>
+    </ion-header-bar>
+    <ion-content>
+        <form name = "wishForm" novalidate>
+            <div class="modal-form">
+                <label class="item item-input" ng-class = "{'has-error' : wishForm.dateW.$invalid || datesAreEqual()}">
+                    <input type = "date" name = "dateW" ng-model="weddingPlan.date" required>
+                    <span class = "text-danger" ng-show = "wishForm.dateW.$error.required">Required!</span>
+                    <span class = "text-danger" ng-show = "datesAreEqual();">Date is obsolite!</span>
+                </label>
+
+                <label class="item item-input" ng-class = "{'has-error' : wishForm.location.$invalid}">
+                    <input type="text" name = "location" ng-model="weddingPlan.place" placeholder = "Deserved location" required>
+                    <span class = "text-danger" ng-show = "wishForm.location.$error.required">Required!</span>
+                </label>
+                <label class="item item-input" ng-class = "{'has-error' : wishForm.invited.$invalid}">
+                    <input type="number" name = "invited" min="1" max="1000" ng-model="weddingPlan.invited" placeholder = "Estimative number of invited" required>
+                    <span class = "text-danger" ng-show = "wishForm.invited.$error.required">Required!</span>
+                    <span class = "text-danger" ng-show = "wishForm.invited.$error.number">Must be positive number between 1 and 1000!</span>
+                </label>
+                <button class="button button-positive button-block text-center" ng-click = "planYourWedding();" ng-disabled = "wishForm.$invalid || datesAreEqual()">Send your wish</button>
+            </div>
+        </form>
+    </ion-content>
+</ion-view>
