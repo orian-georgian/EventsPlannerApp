@@ -16,7 +16,7 @@
     module.constant('CONSTANTS', {
       CLIENT_ID : '285780208615-tuarvu02t2ou4eonj0tel7905hch1st5.apps.googleusercontent.com',
       CLIENT_SECRET : '9pGiPun2lkNdbtL8Jp7opEqb',
-      SCOPES: 'https://www.googleapis.com/auth/userinfo.profile',
+      SCOPES: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/calendar',
       API_KEY : 'AIzaSyDj-csmlxCNe9FcOzhJ_wsW-FziLd-cLhI',
       POST_TYPES : {
         location : 'location_category',

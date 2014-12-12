@@ -4,17 +4,10 @@
 
     angular.module('events.controllers', [])
 
-    .controller('AppCtrl', function ($scope, $ionicModal, $ionicPopup, $timeout, $localStorage, AuthenticationService, AuthenticationModel, WeddingService, CONSTANTS) {
+    .controller('AppCtrl', function ($scope, $cordovaCalendar, $messageBox, $ionicModal, $ionicPopup, $timeout, $localStorage, AuthenticationService, AuthenticationModel, CONSTANTS) {
 
       var authModel = $localStorage.Get('token');
-      $scope.weddingPlan = {
-        budget: 40000
-      };
       $scope.postType = CONSTANTS.POST_TYPES;
-
-      $scope.datesAreEqual = function() {
-          return $scope.minDate > $scope.weddingPlan.date;
-      };
 
       if (authModel) {
         AuthenticationModel = authModel;
@@ -22,16 +15,6 @@
       } else {
         $scope.authenticationModel = AuthenticationModel;
       }
-      
-     
-     $ionicModal.fromTemplateUrl('templates/locationSuggest.html', function($ionicModal) {
-        $scope.weddingPlanModal = $ionicModal;
-    }, {
-        // Use our scope for the scope of the modal to keep it simple
-        scope: $scope,
-        // The animation we want to use for the modal entrance
-        animation: 'slide-in-up'
-    });
 
       $scope.logout = function() {
         var confirmPopup = $ionicPopup.confirm({
@@ -45,32 +28,18 @@
             return;
           }
         });
-      };
-
-      $scope.closeWeddingPlan = function() {
-        $scope.weddingPlanModal.hide();
-      };
+      };   
 
       $scope.login = function() {
           AuthenticationService.login().then(function(authenticationModel){
             $scope.authenticationModel = authenticationModel;
+            $messageBox.showMessage('Successfull login!');
           });
       };
-
-      $scope.weddingPlanBox = function() {
-        $scope.weddingPlanModal.show();
-      };
-
-      $scope.planYourWedding = function() {
-          WeddingService.makeAWish($scope.weddingPlan).then(function(){
-            $scope.closeWeddingPlan();
-          });
-      };
-
 
     })
 
-    .controller('InvitedCtrl', function($scope, $localStorage, $cordovaContacts, $ionicModal, $ionicPopup, $ionicScrollDelegate, InvitedService) {
+    .controller('InvitedCtrl', function($scope, $localStorage, $messageBox, $cordovaContacts, $ionicModal, $ionicPopup, $ionicScrollDelegate, InvitedService) {
 
       $scope.page = { currentPage : 1 };
       $scope.isHidden = true;
@@ -200,6 +169,7 @@
             InvitedService.sendSelectedContacts(contactsList, userId).then(function(){
               $scope.closeInvited();
               getContacts();
+              $messageBox.showMessage(contact.fullName + ' was successfully added!');
             });    
         };
 
@@ -251,6 +221,7 @@
           InvitedService.saveContactChanges(userId, originalContact.id, updatedContacts).then(function(){
             $scope.closeInvited();
             getContacts();
+            $messageBox.showMessage($scope.invitedPerson.fullName + ' was successfully edited!');
           });      
         };
 
@@ -264,6 +235,7 @@
             if(res) {
               InvitedService.removeContact(userId, originalContact.id).then(function(){
                 getContacts();
+                $messageBox.showMessage('Contact deleted!');
               });
             } else {
               return;
@@ -299,12 +271,23 @@
 
     })
 
-    .controller('LocationsCtrl', function ($scope, $stateParams, $ionicScrollDelegate, LocationsService) {
+    .controller('LocationsCtrl', function ($scope, $stateParams, $messageBox, $ionicModal, $ionicScrollDelegate, LocationsService) {
 
         var post_type = $stateParams.type,
             category_post_type = null;
         $scope.page = { currentPage : 1 };
+        $scope.weddingPlan = {};
         $scope.numPerPage = 10;
+        $scope.hideSuggestion = false;
+        $scope.cities = ['Cluj-Napoca'];
+        $scope.post_type = post_type;
+        $scope.categoryName = post_type.slice(0,-9).toUpperCase();
+        $ionicModal.fromTemplateUrl('templates/locationSuggest.html', function($ionicModal) {
+          $scope.weddingPlanModal = $ionicModal;
+        }, {
+            scope: $scope,
+            animation: 'slide-in-up'
+        });
 
         function getLocationCategories() {
           switch (post_type) {
@@ -359,10 +342,14 @@
               $scope.locations = data.locations;
               $scope.totalItems = data.count;
               $scope.nrOfPages = data.pages;
+              $scope.hideSuggestion = false;
               $ionicScrollDelegate.scrollTop(true);
             });
         };
 
+        $scope.datesAreEqual = function() {
+          return $scope.minDate > $scope.weddingPlan.date;
+        };
 
         $scope.getLocationsByCategory = function(category) {
           category_post_type = category ? category.post_type : null;
@@ -374,6 +361,33 @@
           }
         };
 
+        $scope.weddingPlanBox = function() {
+          $scope.weddingPlan.place = $scope.cities[0];
+          $scope.weddingPlanModal.show();
+        };
+
+        $scope.closeWeddingPlan = function() {
+          $scope.weddingPlanModal.hide();
+        };
+
+        $scope.planYourWedding = function() {
+            $scope.weddingPlan.date = moment($scope.weddingPlan.date).format('MM-DD-YYYY');
+            LocationsService.suggestLocation($scope.weddingPlan).then(function(data){
+              if (_.isEmpty(data.locations)) {
+                $scope.closeWeddingPlan();
+                $messageBox.showMessage('No suggestions found!');
+              } else {
+                $scope.locations = data.locations;
+                $scope.totalItems = data.count;
+                $scope.nrOfPages = data.pages;
+                $scope.hideSuggestion = true;
+                $ionicScrollDelegate.scrollTop(true);
+                $scope.closeWeddingPlan();
+              }
+              
+            });
+        };
+
         $scope.$watch('page.currentPage', function(){
             initialize(post_type, category_post_type, $scope.page.currentPage);
         });
@@ -382,9 +396,11 @@
 
     })
 
-    .controller('LocationCtrl', function ($scope, $q, $timeout, $state, $ionicModal, $stateParams, LocationsService) {
+    .controller('LocationCtrl', function ($scope, $q, $messageBox, $ionicPopup, $localStorage, $timeout, $state, $ionicModal, $stateParams, LocationsService) {
         var type = $stateParams.type,
-            id = $stateParams.id;
+            id = $stateParams.id,
+            finalDate = $localStorage.Get('final_date'),
+            userId = $localStorage.Get('userId');
         $scope.isCollapsed = true;
 
         function initialize() {
@@ -456,19 +472,47 @@
         };
 
         $ionicModal.fromTemplateUrl('image-modal.html', {
-      scope: $scope,
-      animation: 'slide-in-up'
-    }).then(function(modal) {
-      $scope.modal = modal;
-    });
+          scope: $scope,
+          animation: 'slide-in-up'
+        }).then(function(modal) {
+          $scope.modal = modal;
+        });
 
-    $scope.openModal = function() {
-      $scope.modal.show();
-    };
+        $scope.openModal = function() {
+          $scope.modal.show();
+        };
 
-    $scope.closeModal = function() {
-      $scope.modal.hide();
-    };
+        $scope.closeModal = function() {
+          $scope.modal.hide();
+        };
+
+        $scope.addToChecklist = function(location) {
+          if (_.isUndefined(finalDate) || _.isNull(finalDate)) {
+            $scope.wedding = {};
+            var datePopup = $ionicPopup.show({
+              template: '<input type="date" ng-model="wedding.date">',
+              title: 'Set wedding final date',
+              scope: $scope,
+              buttons: [
+                { text: 'Cancel' },
+                {
+                  text: '<b>Send date</b>',
+                  type: 'button-positive',
+                  onTap: function(e) {
+                    $scope.wedding.date = moment($scope.wedding.date).format('MM-DD-YYYY');
+                    LocationsService.addWeddingDate(userId, $scope.wedding.date).then(function(data){
+                        $localStorage.Set('final_date', $scope.wedding.date);
+                        $messageBox.showMessage('Wedding date has been added!');
+                    });
+                  }
+                },
+              ]
+            });
+          } else {
+
+          }
+
+        };
 
         initialize();
     });

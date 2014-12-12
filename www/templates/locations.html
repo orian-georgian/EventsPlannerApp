@@ -1,10 +1,10 @@
-<ion-view title="Locations" class = "main-window" animation="slide-left-right">
+<ion-view title="{{categoryName}}" class = "main-window" animation="slide-left-right">
     <ion-nav-buttons side="left">
 	    <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
 	</ion-nav-buttons>
     <ion-content class="has-header has-footer">
         <div class="list">
-            <label class="item item-input item-select" ng-hide = "!locationCategories || locationCategories[0].post_type == 'beauty'">
+            <label class="item item-input item-select" ng-hide = "!locationCategories || locationCategories[0].post_type == 'beauty' || hideSuggestion" >
                 <div class="input-label">Locations category</div>
                 <select ng-options = "category.label for category in locationCategories" ng-model = "categoryModel" ng-change = "getLocationsByCategory(categoryModel);">
                     <option value="">All locations</option>
@@ -19,12 +19,19 @@
                 <pagination boundary-links="true" num-pages = "nrOfPages" max-size = "5"  total-items="totalItems" ng-model="page.currentPage" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
             </div>
         </div>
-        
     </ion-content>
     <div class="tabs tabs-icon-top">
+        <a class="tab-item" ng-href = "" ng-click = "goBack();">
+            <i class="icon ion-arrow-return-left"></i>
+            Back
+        </a>
     	<a class="tab-item" ng-href = "#/events">
             <i class="icon ion-home"></i>
             Events
+        </a>
+        <a ng-show = "post_type === 'location_category'" class="tab-item" ng-click = "weddingPlanBox();">
+            <i class="icon ion-clipboard"></i>
+            Suggest locations
         </a>
     </div>
 </ion-view>

@@ -25,15 +25,20 @@
 		};
 	}]);
 
-	module.factory('$googleMaps', function(){
+	module.factory('$messageBox',['$ionicPopup', '$timeout', function ($ionicPopup, $timeout){
 		return {
-			initializeMap : function(){
-
+			showMessage : function(message){
+				var messageBox = $ionicPopup.show({
+					template: message
+				});
+				$timeout(function(){
+					messageBox.close();
+				}, 3000);
 			}
 		}
-	});
+	}]);
 
-	module.service('AuthenticationService', function ($http, $q, $state, $rootScope, $timeout, $localStorage, AuthenticationModel, WeddingService, CONSTANTS){
+	module.service('AuthenticationService', function ($http, $q, $state, $rootScope, $timeout, $localStorage, AuthenticationModel, CONSTANTS){
 
 		var deff = {},
 			requestToken = '',
@@ -172,46 +177,6 @@
 		}
 
 		$http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-
-	});
-
-	module.service('WeddingService', function ($http, $q) {
-
-		this.makeAWish = function(weddingPlan) {
-			var result = $q.defer();
-
-			$http({
-				url : '',
-				method: 'POST',
-				data : weddingPlan
-			})
-			.success(function(data){
-				result.resolve(data);
-			})
-			.error(function(error){
-				result.reject(error);
-			});
-
-			return result.promise;
-		};
-
-		this.sendAuthUserInfo = function(userData) {
-			var result = $q.defer();
-
-			$http({
-				url : '',
-				method: 'POST',
-				data : userData
-			})
-			.success(function(data){
-				result.resolve(data);
-			})
-			.error(function(error){
-				result.reject(error);
-			});
-
-			return result.promise;
-		};
 
 	});
 
@@ -401,6 +366,76 @@
 				params : {
 					address : address,
 					sensor : false
+				}
+			})
+			.success(function(data){
+				deferred.resolve(data);
+			}).error(function(error){
+				deferred.reject(error);
+			});
+
+			return deferred.promise;
+		};
+
+		this.suggestLocation = function(weddingPlan) {
+			var deferred = $q.defer();
+
+			$http({
+				url : 'http://adclk.com/eventplanner/api/suggest_locations/',
+				method : 'GET',
+				headers: {
+					'Content-type': 'application/jsonp'
+				},
+				params : {
+					date : weddingPlan.date,
+					location : weddingPlan.place,
+					capacity : weddingPlan.invited
+				}
+			})
+			.success(function(data){
+				deferred.resolve(lmapper.mapLocations(data));
+			}).error(function(error){
+				deferred.reject(error);
+			});
+
+			return deferred.promise;
+		};
+
+		this.getWeddingDate = function(userId) {
+			var deferred = $q.defer();
+
+			$http({
+				url : 'http://adclk.com/eventplanner/api/user/get_user_meta/',
+				method : 'GET',
+				headers: {
+					'Content-type': 'application/jsonp'
+				},
+				params : {
+					userId : userId
+				}
+			})
+			.success(function(data){
+				deferred.resolve(data);
+			}).error(function(error){
+				deferred.reject(error);
+			});
+
+			return deferred.promise;
+		};
+
+		this.addWeddingDate = function(userId, weddingDate) {
+			var deferred = $q.defer();
+
+			$http({
+				url : 'http://adclk.com/eventplanner/api/user/add_user_meta/',
+				method : 'GET',
+				headers: {
+					'Content-type': 'application/jsonp'
+				},
+				params : {
+					userId : userId,
+					meta_key : 'date',
+					meta_value : weddingDate
 				}
 			})
 			.success(function(data){
