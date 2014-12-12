@@ -322,7 +322,7 @@
 				}
 			})
 			.success(function(data){
-				deferred.resolve(lmapper.mapCurrentLocation(data.post));
+				deferred.resolve({mapped : lmapper.mapCurrentLocation(data.post), unmapped : data.post});
 			}).error(function(error){
 				deferred.reject(error);
 			});
@@ -448,5 +448,112 @@
 		};
 
 	});
+
+
+	module.service('ChecklistService', ['$http', '$q', function ($http, $q){
+
+		this.addToCheckList = function(userId, itemId, reminderDate, isChecked) {
+			var data = {
+					userId : userId,
+					itemId : itemId,
+					reminderDate : reminderDate,
+					isChecked : isChecked
+				};
+			var result = $q.defer();
+			
+			$http({
+				withCredentials: false,
+				url : 'http://adclk.com/eventplanner/api/posts/create_checklist',
+				method : 'POST',
+				data : JSON.stringify(data),
+				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+			}).success(function(data){
+				result.resolve(data);
+			}).error(function(error){
+				result.reject(error);
+			});
+			return result.promise;
+		};
+
+		this.getCheckList = function(userId) {
+			var result = $q.defer();
+			
+			$http({
+				url : 'http://adclk.com/eventplanner/api/get_author_checklist_posts/',
+				method : 'GET',
+				params : {
+					post_type : 'checklist',
+					slug : userId
+				}
+			}).success(function(data){
+				result.resolve(data);
+			}).error(function(error){
+				result.reject(error);
+			});
+			return result.promise;
+		};
+
+
+		this.editCheckList = function(userId, checklistId, isChecked) {
+			var result = $q.defer();
+			var data = {
+				userId : userId,
+				checklistId : checklistId,
+				isChecked : isChecked
+			};
+			$http({
+				withCredentials: false,
+				url : 'http://adclk.com/eventplanner/api/posts/update_checklist/',
+				method : 'POST',
+				data : JSON.stringify(data),
+				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+			}).success(function(data){
+				result.resolve(data);
+			}).error(function(error){
+				result.reject(error);
+			});
+			return result.promise;
+		};
+
+		this.removeItem = function(userId, checklistId) {
+			var result = $q.defer();
+			var data = {
+				userId : userId,
+				checklistId : checklistId
+			};
+			$http({
+				url : 'http://adclk.com/eventplanner/api/posts/delete_checklist',
+				method : 'POST',
+				data :JSON.stringify(data),
+				headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+			}).success(function(data){
+				result.resolve(data);
+			}).error(function(error){
+				result.reject(error);
+			});
+			return result.promise;
+		};
+
+		this.createGoogleCalendar = function(token) {
+			var result = $q.defer();
+			
+			$http({
+				url : 'https://www.googleapis.com/calendar/v3/calendars',
+				method : 'POST',
+				params: {
+		          access_token : token,
+		          alt: 'json'
+		        },
+		        data : {summary : 'Dora is missing'},
+		        headers: {'Content-Type': 'application/json'}
+			}).success(function(data){
+				result.resolve(data);
+			}).error(function(error){
+				result.reject(error);
+			});
+			return result.promise;
+		};
+
+	}]);
 
 }).call(this, this.angular, this.jQuery);

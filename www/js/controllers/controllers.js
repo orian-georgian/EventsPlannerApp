@@ -4,9 +4,10 @@
 
     angular.module('events.controllers', [])
 
-    .controller('AppCtrl', function ($scope, $cordovaCalendar, $messageBox, $ionicModal, $ionicPopup, $timeout, $localStorage, AuthenticationService, AuthenticationModel, CONSTANTS) {
+    .controller('AppCtrl', function ($scope, $cordovaCalendar, $messageBox, $ionicModal, $ionicPopup, $timeout, $localStorage, AuthenticationService, AuthenticationModel, ChecklistService, CONSTANTS) {
 
-      var authModel = $localStorage.Get('token');
+      var authModel = $localStorage.Get('token'),
+          userId = $localStorage.Get('userId');
       $scope.postType = CONSTANTS.POST_TYPES;
 
       if (authModel) {
@@ -14,6 +15,15 @@
         $scope.authenticationModel = authModel;
       } else {
         $scope.authenticationModel = AuthenticationModel;
+      }
+
+      function getChecklistItems() {
+        ChecklistService.getCheckList('114688854124514632382').then(function(data){
+          $scope.items = data.posts;
+          _.each($scope.items, function(item) {
+            item.custom_fields.ischecked[0] = item.custom_fields.ischecked[0] === "0" ? false : true;
+          })
+        });
       }
 
       $scope.logout = function() {
@@ -37,9 +47,37 @@
           });
       };
 
+      $scope.removeFromChecklist = function(item) {
+          var confirmPopup = $ionicPopup.confirm({
+            title: 'Remove checklist item!',
+            template: 'Are you sure you want to remove this item?'
+          });
+          confirmPopup.then(function(res) {
+            if(res) {
+              ChecklistService.removeItem('114688854124514632382', item.id).then(function(){
+                  $messageBox.showMessage('Item removed from checklist!');
+                  getChecklistItems();
+              });
+            } else {
+              return;
+            }
+          });
+      };
+
+      $scope.editItem = function(item) {
+        item.custom_fields.ischecked[0] = !item.custom_fields.ischecked[0];
+        item.custom_fields.ischecked[0] = item.custom_fields.ischecked[0] == false ? '0' : '1';
+        ChecklistService.editCheckList('114688854124514632382', item.id, item.custom_fields.ischecked[0]).then(function(){
+          getChecklistItems();
+
+        })
+      };
+
+      getChecklistItems();
+
     })
 
-    .controller('InvitedCtrl', function($scope, $localStorage, $messageBox, $cordovaContacts, $ionicModal, $ionicPopup, $ionicScrollDelegate, InvitedService) {
+    .controller('InvitedCtrl', function($scope, $localStorage, $cordovaCalendar, $messageBox, $cordovaContacts, $ionicModal, $ionicPopup, $ionicScrollDelegate, InvitedService) {
 
       $scope.page = { currentPage : 1 };
       $scope.isHidden = true;
@@ -396,17 +434,27 @@
 
     })
 
-    .controller('LocationCtrl', function ($scope, $q, $messageBox, $ionicPopup, $localStorage, $timeout, $state, $ionicModal, $stateParams, LocationsService) {
+    .controller('LocationCtrl', function ($scope, $q, $messageBox, $ionicPopup, $localStorage, $timeout, $state, $ionicModal, $stateParams, LocationsService, ChecklistService) {
         var type = $stateParams.type,
             id = $stateParams.id,
-            finalDate = $localStorage.Get('final_date'),
-            userId = $localStorage.Get('userId');
+            finalDate = null,
+            userId = $localStorage.Get('userId'),
+            authModel = $localStorage.Get('token'),
+            originalLocation = null;
         $scope.isCollapsed = true;
 
+        function getFinalDate() {
+          LocationsService.getWeddingDate('114688854124514632382').then(function(data){
+            finalDate = data.date;
+          });
+        }
+
         function initialize() {
-            LocationsService.getCurrentLocation(type, id).then(function(location){
-              initMap(location);
-                $scope.locationItem = location; 
+            getFinalDate();
+            LocationsService.getCurrentLocation(type, id).then(function(data){
+                initMap(data.mapped);
+                $scope.locationItem = data.mapped;
+                originalLocation = data.unmapped;
             });
         }
 
@@ -501,15 +549,36 @@
                   onTap: function(e) {
                     $scope.wedding.date = moment($scope.wedding.date).format('MM-DD-YYYY');
                     LocationsService.addWeddingDate(userId, $scope.wedding.date).then(function(data){
-                        $localStorage.Set('final_date', $scope.wedding.date);
-                        $messageBox.showMessage('Wedding date has been added!');
+                        ChecklistService.createGoogleCalendar(authModel.token).then(function(data){
+                            $localStorage.Set('calendarId', data.id);
+                            $messageBox.showMessage('Wedding date has been added and a google calendar has been created in your google account!');
+                        }); 
                     });
                   }
                 },
               ]
             });
           } else {
-
+              
+              $scope.wedding = {};
+              var datePopup = $ionicPopup.show({
+                template: '<input type="date" ng-model="wedding.date">',
+                title: 'Set reminder date',
+                scope: $scope,
+                buttons: [
+                  { text: 'Cancel' },
+                  {
+                    text: '<b>Send date</b>',
+                    type: 'button-positive',
+                    onTap: function(e) {
+                      $scope.wedding.date = moment($scope.wedding.date).format('MM-DD-YYYY');
+                      ChecklistService.addToCheckList('114688854124514632382', originalLocation.id, $scope.wedding.date, '0').then(function(){
+                          $messageBox.showMessage('Location added to checklist!');
+                      });
+                    }
+                  },
+                ]
+              });
           }
 
         };
