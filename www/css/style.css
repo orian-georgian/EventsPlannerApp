@@ -119,12 +119,16 @@
 .menu-container .decoration a{
 	background-image: url('../img/button-shadow.png'), url('../img/decoration-bg.png');
 }
+.menu-container .beauty a{
+	background-image: url('../img/button-shadow.png'), url('../img/beauty-bg.png');
+}
 .menu-container .invited a{
 	background-image: url('../img/button-shadow.png'), url('../img/invited-bg.png');
 	}
 .menu-container .log a{
 	background-image: url('../img/button-shadow.png'), url('../img/log-bg.png');
 }
+
 
 
 
@@ -260,6 +264,7 @@ label.wish .range-positive{
 	margin-left:-137px;
 	z-index:9999;
 }
+
 /* event icons */
 .EventsIcons{
 	background: transparent url('../img/icon-line.png') center 97px no-repeat;
@@ -307,10 +312,12 @@ label.wish .range-positive{
 }
 
 .bar.bar-stable {
-    background-color: none;
-    background-image: none;
-    border-color: none;
-    color: #ff6c00;
+    background-image: none !important;
+    border-color: #b2b2b2;
+    color: #444;
+}
+.locations .bar.bar-stable {
+    background-color: pink !important;
 }
 h1.orange{
 		color:#e86900 !important;
